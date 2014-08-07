@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1522583A-7678-4FF0-AEA5-22B3C4ABF324}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SMG.ThirdSGIP</RootNamespace>
+    <AssemblyName>SMG.ThirdSGIP</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="KeywaySoft.Public.SGIP.Base\AddTextDelegate.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\BaseCommand.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\BaseSortedList!2.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\BitConvert.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\ClientQueue.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\ErrorCodes.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\ErrorMessageHelper.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\LoginDelegate.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\LoginTypes.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\MSGCommandId.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\MSGFormat.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\MSGHead.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\MSG_STATE.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\NetEventDelegate.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\QueueItem.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\QueueList.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Base\SubmitResult.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Command\BindResp.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Command\Deliver.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Command\DeliverResp.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Command\Report.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Command\ReportResp.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Command\Submit.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Command\SubmitResp.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Command\Unbind.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.Command\UnbindResp.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.DataBase\BorrowReader.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.DataBase\DBClass.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.SGIPSocket\TCPSocketClient.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.SGIPSocket\TcpSocketServer.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.SGIPThread\BaseThread.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP.SGIPThread\ThreadHandle.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP\Bind.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP\Logic.cs" />
+    <Compile Include="KeywaySoft.Public.SGIP\SystemDelegate.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
