@@ -114,6 +114,8 @@ namespace SMG.TcpSocket
                 {
                     recvDone.Set();
                     SocketExceptionHandler(e);
+                    //暂时先断开连接
+                    Disconnect();
                 }
             }
             catch (SocketException e)

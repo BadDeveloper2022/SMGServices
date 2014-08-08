@@ -7,7 +7,6 @@ namespace SMG.TcpSocket
 {
     public class TransferSet
     {
-        public static readonly Encoding Charset = Encoding.ASCII;
         /// <summary>
         /// 每个消息包不大于2K
         /// </summary>

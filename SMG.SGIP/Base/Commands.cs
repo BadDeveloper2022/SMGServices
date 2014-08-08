@@ -17,9 +17,11 @@ namespace SMG.SGIP.Base
         public const uint Deliver_Resp = 0x80000004;
         public const uint Report = 5;
         public const uint Report_Resp = 0x80000005;
-        public const uint Trace = 0x1000;
-        public const uint Trace_Resp = 0x80001000;
+        public const uint CheckUser = 0x10;
+        public const uint CheckUser_Resp = 0x80000010;
         public const uint UserRpt = 0x11;
         public const uint UserRpt_Resp = 0x80000011;
+        public const uint Trace = 0x1000;
+        public const uint Trace_Resp = 0x80001000;
     }
 }

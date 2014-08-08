@@ -55,7 +55,7 @@ namespace SMG.SGIP.Base
         /// <param name="nodeNumber"></param>
         public static void SetNodeNumber(uint nodeNumber)
         {
-            NetBitConverter.GetBytes(nodeNumber).CopyTo(nodeBytes, 0);
+            GetBytes(nodeNumber).CopyTo(nodeBytes, 0);
         }
 
         public static byte[] Next()
@@ -65,13 +65,20 @@ namespace SMG.SGIP.Base
             locker.EnterWriteLock();
 
             Array.Copy(nodeBytes, 0, seqs, 0, 4);
-            Array.Copy(NetBitConverter.GetBytes(CurrentTime), 0, seqs, 4, 4);
-            Array.Copy(NetBitConverter.GetBytes(CurrentOrdinal), 0, seqs, 8, 4);
+            Array.Copy(GetBytes(CurrentTime), 0, seqs, 4, 4);
+            Array.Copy(GetBytes(CurrentOrdinal), 0, seqs, 8, 4);
 
             locker.ExitWriteLock();
 
             return seqs;
         }
 
+        public static byte[] GetBytes(uint value)
+        {
+            byte[] dst = BitConverter.GetBytes(value);
+            dst = dst.Reverse().ToArray();
+
+            return dst;
+        }
     }
 }

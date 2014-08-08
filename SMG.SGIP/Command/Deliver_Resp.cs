@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SMG.SGIP.Command
 {
-    public class Submit_Resp : BaseCommand
+    public class Deliver_Resp : BaseCommand
     {
         #region fields
 
@@ -17,12 +17,12 @@ namespace SMG.SGIP.Command
 
         #endregion
 
-        public Submit_Resp()
+        public Deliver_Resp()
         {
-            base.Command = Commands.Submit_Resp;
+            base.Command = Commands.Deliver_Resp;
         }
 
-        public Submit_Resp(byte[] bytes)
+        public Deliver_Resp(byte[] bytes)
         {
             this.Result = bytes[HEADER_LENGTH];
         }
@@ -40,6 +40,5 @@ namespace SMG.SGIP.Command
 
             return buffer;
         }
-
     }
 }

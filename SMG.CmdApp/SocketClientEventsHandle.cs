@@ -19,8 +19,8 @@ namespace SMG.CmdApp
                 {
                     case Commands.Bind:
                         var bind = new Bind(buffers);
-                        Console.WriteLine("logintype : " + bind.LoginType + " , username : " + bind.UserName + " , password : " + bind.Password);
-                        var resp = new BindResp()
+                        Console.WriteLine(bind.ToString());
+                        var resp = new Bind_Resp()
                         {
                             SequenceNumber = bind.SequenceNumber,
                             Result = 0

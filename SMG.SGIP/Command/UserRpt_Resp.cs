@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SMG.SGIP.Command
 {
-    public class BindResp : BaseCommand
+    public class UserRpt_Resp : BaseCommand
     {
         #region fields
 
@@ -17,12 +17,12 @@ namespace SMG.SGIP.Command
 
         #endregion
 
-        public BindResp()
+        public UserRpt_Resp()
         {
-            base.Command = Commands.Bind_Resp;
+            base.Command = Commands.UserRpt_Resp;
         }
 
-        public BindResp(byte[] bytes)
+        public UserRpt_Resp(byte[] bytes)
             : base(bytes)
         {
             this.Result = bytes[HEADER_LENGTH];
@@ -30,17 +30,16 @@ namespace SMG.SGIP.Command
 
         public override byte[] GetBytes()
         {
-            byte[] buffer = new byte[HEADER_LENGTH + 1 + 8];
-            base.MessageLength = (uint)buffer.Length;
+            byte[] bytes = new byte[HEADER_LENGTH + 1 + 8];
+            base.TotalMessageLength = (uint)bytes.Length;
 
-            int index = 0;
             //消息头
-            base.Headers.CopyTo(buffer, index);
+            base.Headers.CopyTo(bytes, 0);
             //消息体
-            index += HEADER_LENGTH;
-            buffer[index] = (byte)Result;
+            int offset = HEADER_LENGTH;
+            bytes[offset] = (byte)Result;
 
-            return buffer;
+            return bytes;
         }
 
     }

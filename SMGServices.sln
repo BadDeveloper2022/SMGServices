@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMG.CmdApp", "SMG.CmdApp\SM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMG.TcpSocket", "SMG.TcpSocket\SMG.TcpSocket.csproj", "{A66A5F90-3F33-4327-9141-79FDAC108C74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMG.ThirdSGIP", "SMG.ThirdSGIP\SMG.ThirdSGIP.csproj", "{1522583A-7678-4FF0-AEA5-22B3C4ABF324}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{A66A5F90-3F33-4327-9141-79FDAC108C74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A66A5F90-3F33-4327-9141-79FDAC108C74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A66A5F90-3F33-4327-9141-79FDAC108C74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1522583A-7678-4FF0-AEA5-22B3C4ABF324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1522583A-7678-4FF0-AEA5-22B3C4ABF324}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1522583A-7678-4FF0-AEA5-22B3C4ABF324}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1522583A-7678-4FF0-AEA5-22B3C4ABF324}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
