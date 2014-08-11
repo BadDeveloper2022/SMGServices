@@ -10,9 +10,9 @@ namespace SMG.CmdApp
     {
         static void Main(string[] args)
         {
+            CmdRouter cmdRouter = new CmdRouter();
             TcpSocketServer tcpServer = new TcpSocketServer("127.0.0.1", 9001);
-            tcpServer.OnRecv += SocketClientEventsHandle.OnRecv;
-
+            cmdRouter.Register(tcpServer);
             tcpServer.Listen(50);
 
             Console.WriteLine(tcpServer.BindIPAddress + "> 网关服务已启动！");

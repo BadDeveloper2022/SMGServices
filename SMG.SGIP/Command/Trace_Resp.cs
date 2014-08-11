@@ -8,7 +8,7 @@ namespace SMG.SGIP.Command
 {
     public class Trace_Resp : BaseCommand
     {
-        #region fields
+        #region Properties
 
         /// <summary>
         /// 被跟踪MT短消息经过的节点个数，当被跟踪短消息经过多个节点时，以下各个字段可重复 1字节
@@ -48,16 +48,23 @@ namespace SMG.SGIP.Command
         public Trace_Resp(byte[] bytes)
             : base(bytes)
         {
-            int offset = HEADER_LENGTH;
-            this.Count = bytes[offset];
-            offset++;
-            this.Result = bytes[offset];
-            offset++;
-            this.NodeId = GetString(bytes, offset, 10);
-            offset += 10;
-            this.ReceiveTime = GetString(bytes, offset, 16);
-            offset += 10;
-            this.SendTime = GetString(bytes, offset, 16);
+            try
+            {
+                int offset = HEADER_LENGTH;
+                this.Count = bytes[offset];
+                offset++;
+                this.Result = bytes[offset];
+                offset++;
+                this.NodeId = GetString(bytes, offset, 10);
+                offset += 10;
+                this.ReceiveTime = GetString(bytes, offset, 16);
+                offset += 10;
+                this.SendTime = GetString(bytes, offset, 16);
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.Trace_Resp);
+            }
         }
 
         public override byte[] GetBytes()
@@ -65,20 +72,27 @@ namespace SMG.SGIP.Command
             byte[] bytes = new byte[HEADER_LENGTH + 12 + 21 + 8];
             base.TotalMessageLength = (uint)bytes.Length;
 
-            //消息头
-            base.Headers.CopyTo(bytes, 0);
-            //消息体
-            int offset = HEADER_LENGTH;
-            bytes[offset] = (byte)Count;
-            bytes[offset] = (byte)Result;
-            byte[] nibts = GetBytes(NodeId);
-            Array.Copy(nibts, 0, bytes, offset, nibts.Length);
-            offset += 10;
-            byte[] rtbts = GetBytes(ReceiveTime);
-            Array.Copy(rtbts, 0, bytes, offset, rtbts.Length);
-            offset += 16;
-            byte[] stbts = GetBytes(ReceiveTime);
-            Array.Copy(stbts, 0, bytes, offset, stbts.Length);
+            try
+            {
+                //消息头
+                base.Headers.CopyTo(bytes, 0);
+                //消息体
+                int offset = HEADER_LENGTH;
+                bytes[offset] = (byte)Count;
+                bytes[offset] = (byte)Result;
+                byte[] nibts = GetBytes(NodeId);
+                Array.Copy(nibts, 0, bytes, offset, nibts.Length);
+                offset += 10;
+                byte[] rtbts = GetBytes(ReceiveTime);
+                Array.Copy(rtbts, 0, bytes, offset, rtbts.Length);
+                offset += 16;
+                byte[] stbts = GetBytes(ReceiveTime);
+                Array.Copy(stbts, 0, bytes, offset, stbts.Length);
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.Trace_Resp);
+            }
 
             return bytes;
         }

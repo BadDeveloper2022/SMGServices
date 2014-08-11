@@ -8,7 +8,7 @@ namespace SMG.SGIP.Command
 {
     public class UserRpt : BaseCommand
     {
-        #region fields
+        #region Properties
 
         /// <summary>
         /// SP的接入号码 21字节
@@ -36,12 +36,19 @@ namespace SMG.SGIP.Command
         public UserRpt(byte[] bytes)
             : base(bytes)
         {
-            int offset = HEADER_LENGTH;
-            this.SPNumber = GetString(bytes, offset, 21);
-            offset += 21;
-            this.UserNumber = GetString(bytes, offset, 21);
-            offset += 21;
-            this.UserCondition = bytes[offset];
+            try
+            {
+                int offset = HEADER_LENGTH;
+                this.SPNumber = GetString(bytes, offset, 21);
+                offset += 21;
+                this.UserNumber = GetString(bytes, offset, 21);
+                offset += 21;
+                this.UserCondition = bytes[offset];
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.UserRpt);
+            }
         }
 
         public override byte[] GetBytes()
@@ -49,17 +56,24 @@ namespace SMG.SGIP.Command
             byte[] bytes = new byte[HEADER_LENGTH + 21 + 21 + 1 + 8];
             base.TotalMessageLength = (uint)bytes.Length;
 
-            //消息头
-            base.Headers.CopyTo(bytes, 0);
-            //消息体
-            int offset = HEADER_LENGTH;
-            byte[] snbts = GetBytes(SPNumber);
-            Array.Copy(snbts, 0, bytes, offset, snbts.Length);
-            offset += 21;
-            byte[] unbts = GetBytes(UserNumber);
-            Array.Copy(unbts, 0, bytes, offset, unbts.Length);
-            offset += 21;
-            bytes[offset] = (byte)UserCondition;
+            try
+            {
+                //消息头
+                base.Headers.CopyTo(bytes, 0);
+                //消息体
+                int offset = HEADER_LENGTH;
+                byte[] snbts = GetBytes(SPNumber);
+                Array.Copy(snbts, 0, bytes, offset, snbts.Length);
+                offset += 21;
+                byte[] unbts = GetBytes(UserNumber);
+                Array.Copy(unbts, 0, bytes, offset, unbts.Length);
+                offset += 21;
+                bytes[offset] = (byte)UserCondition;
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.UserRpt);
+            }
 
             return bytes;
         }

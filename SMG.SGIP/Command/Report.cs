@@ -8,7 +8,7 @@ namespace SMG.SGIP.Command
 {
     public class Report : BaseCommand
     {
-        #region fields
+        #region Properties
 
         /// <summary>
         /// 该命令所涉及的Submit或deliver命令的序列号  12字节
@@ -52,35 +52,49 @@ namespace SMG.SGIP.Command
         public Report(byte[] bytes)
             : base(bytes)
         {
-            int offset = HEADER_LENGTH;
-            this.SubmitSequenceNumber = ToUInt32(bytes, offset, 12);
-            offset += 12;
-            this.ReportType = bytes[offset];
-            offset++;
-            this.UserNumber = GetString(bytes, offset, 12);
-            offset += 12;
-            this.State = bytes[offset];
-            offset++;
-            this.ErrorCode = bytes[offset];
+            try
+            {
+                int offset = HEADER_LENGTH;
+                this.SubmitSequenceNumber = ToUInt32(bytes, offset, 12);
+                offset += 12;
+                this.ReportType = bytes[offset];
+                offset++;
+                this.UserNumber = GetString(bytes, offset, 12);
+                offset += 12;
+                this.State = bytes[offset];
+                offset++;
+                this.ErrorCode = bytes[offset];
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.Report);
+            }
         }
 
         public override byte[] GetBytes()
         {
             byte[] bytes = new byte[HEADER_LENGTH + 12 + 1 + 21 + 1 + 1 + 8];
             base.TotalMessageLength = (uint)bytes.Length;
-            
-            //消息头
-            base.Headers.CopyTo(bytes, 0);
-            //消息体
-            int offset = HEADER_LENGTH;
-            byte[] ssnbts = GetBytes(SubmitSequenceNumber);
-            Array.Copy(ssnbts, 0, bytes, offset, ssnbts.Length);
-            offset += 12;
-            bytes[offset] = (byte)ReportType;
-            offset++;
-            byte[] unbts = GetBytes(UserNumber);
-            Array.Copy(unbts, 0, bytes, offset, unbts.Length);
-            offset += 21;
+
+            try
+            {
+                //消息头
+                base.Headers.CopyTo(bytes, 0);
+                //消息体
+                int offset = HEADER_LENGTH;
+                byte[] ssnbts = GetBytes(SubmitSequenceNumber);
+                Array.Copy(ssnbts, 0, bytes, offset, ssnbts.Length);
+                offset += 12;
+                bytes[offset] = (byte)ReportType;
+                offset++;
+                byte[] unbts = GetBytes(UserNumber);
+                Array.Copy(unbts, 0, bytes, offset, unbts.Length);
+                offset += 21;
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.Report);
+            }
 
             return bytes;
         }

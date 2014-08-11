@@ -8,7 +8,7 @@ namespace SMG.SGIP.Command
 {
     public class CheckUser : BaseCommand
     {
-        #region fields
+        #region Properties
 
         /// <summary>
         /// 计费中心给SMG分配的用户名  16字节
@@ -36,12 +36,19 @@ namespace SMG.SGIP.Command
         public CheckUser(byte[] bytes)
             : base(bytes)
         {
-            int offset = HEADER_LENGTH;
-            this.UserName = GetString(bytes, offset, 16);
-            offset += 16;
-            this.Password = GetString(bytes, offset, 16);
-            offset += 16;
-            this.UserNumber = GetString(bytes, offset, 21);
+            try
+            {
+                int offset = HEADER_LENGTH;
+                this.UserName = GetString(bytes, offset, 16);
+                offset += 16;
+                this.Password = GetString(bytes, offset, 16);
+                offset += 16;
+                this.UserNumber = GetString(bytes, offset, 21);
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.CheckUser);
+            }
         }
 
         public override byte[] GetBytes()
@@ -49,18 +56,25 @@ namespace SMG.SGIP.Command
             byte[] bytes = new byte[HEADER_LENGTH + 16 + 16 + 21 + 8];
             base.TotalMessageLength = (uint)bytes.Length;
 
-            //消息头
-            base.Headers.CopyTo(bytes, 0);       
-            //消息体
-            int offset = HEADER_LENGTH;
-            byte[] unbts = GetBytes(UserName);
-            Array.Copy(unbts, 0, bytes, offset, unbts.Length);
-            offset += 16;
-            byte[] pwdbts = GetBytes(Password);
-            Array.Copy(pwdbts, 0, bytes, offset, pwdbts.Length);
-            offset += 16;
-            byte[] unbbts = GetBytes(UserNumber);
-            Array.Copy(unbbts, 0, bytes, offset, unbbts.Length);
+            try
+            {
+                //消息头
+                base.Headers.CopyTo(bytes, 0);
+                //消息体
+                int offset = HEADER_LENGTH;
+                byte[] unbts = GetBytes(UserName);
+                Array.Copy(unbts, 0, bytes, offset, unbts.Length);
+                offset += 16;
+                byte[] pwdbts = GetBytes(Password);
+                Array.Copy(pwdbts, 0, bytes, offset, pwdbts.Length);
+                offset += 16;
+                byte[] unbbts = GetBytes(UserNumber);
+                Array.Copy(unbbts, 0, bytes, offset, unbbts.Length);
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.CheckUser);
+            }
 
             return bytes;
         }

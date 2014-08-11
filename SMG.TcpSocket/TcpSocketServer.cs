@@ -12,7 +12,14 @@ namespace SMG.TcpSocket
     {
         #region events
 
+        private event SendEventHandler onSend;
         private event RecvEventHandler onRecv;
+
+        public event SendEventHandler OnSend
+        {
+            add { onSend += value; }
+            remove { onSend -= value; }
+        }
 
         public event RecvEventHandler OnRecv
         {
@@ -25,6 +32,7 @@ namespace SMG.TcpSocket
         private string ip;
         private int port;
         private bool listened;
+        private int poolSize;
         private Socket workSocket;
         private Thread acceptThread;
         private ManualResetEvent accpetDone;
@@ -50,7 +58,7 @@ namespace SMG.TcpSocket
             
         }
 
-        public void Listen(int backlog)
+        public void Listen(int poolSize)
         {
             try
             {
@@ -58,8 +66,9 @@ namespace SMG.TcpSocket
                 {
                     workSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     workSocket.Bind(new IPEndPoint(IPAddress.Parse(ip), port));
-                    workSocket.Listen(backlog);
+                    workSocket.Listen(poolSize);
                     listened = true;
+                    this.poolSize = poolSize;
 
                     if (acceptThread != null && acceptThread.IsAlive)
                     {
@@ -79,6 +88,7 @@ namespace SMG.TcpSocket
                                     var client = workSocket.EndAccept(ar);
                                     var tcpClient = new TcpSocketClient(client);
                                     tcpClient.OnRecv += onRecv;
+                                    tcpClient.OnSend += onSend;
                                     tcpClient.Start();
 
                                     Console.WriteLine(client.RemoteEndPoint.ToString() + " 已连接");

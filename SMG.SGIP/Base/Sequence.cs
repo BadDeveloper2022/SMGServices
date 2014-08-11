@@ -53,9 +53,9 @@ namespace SMG.SGIP.Base
         /// 设置节点号码
         /// </summary>
         /// <param name="nodeNumber"></param>
-        public static void SetNodeNumber(uint nodeNumber)
+        public static void SetNodeNumber(uint node)
         {
-            GetBytes(nodeNumber).CopyTo(nodeBytes, 0);
+            GetBytes(node).CopyTo(nodeBytes, 0);
         }
 
         public static byte[] Next()

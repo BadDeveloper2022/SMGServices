@@ -10,7 +10,7 @@ namespace SMG.SGIP.Base
     {
         public const int HEADER_LENGTH = 20;
 
-        #region header fields
+        #region header Properties
 
         /// <summary>
         /// 消息的总长度(字节) 4字节
@@ -23,9 +23,24 @@ namespace SMG.SGIP.Base
         public uint Command { get; protected set; }
 
         /// <summary>
+        /// 序列号
+        /// </summary>
+        private byte[] sequenceNumber;
+
+        /// <summary>
         /// 序列号 12字节 , 响应的序列号和接受到的请求序列号一致
         /// </summary>
-        public byte[] SequenceNumber { get; set; }
+        public byte[] SequenceNumber
+        {
+            get { return sequenceNumber; }
+            set
+            {
+                sequenceNumber = value;
+                this.NodeNumber = ToUInt32(value, 0, 4);
+                this.DateTime = ToUInt32(value, 4, 4);
+                this.OrdinalNumber = ToUInt32(value, 8, 4);
+            }
+        }
 
         /// <summary>
         /// 节点号 4字节
@@ -60,7 +75,7 @@ namespace SMG.SGIP.Base
 
         #endregion
 
-        #region public fields
+        #region public Properties
 
         /// <summary>
         /// 保留扩展用 8字节
@@ -76,15 +91,20 @@ namespace SMG.SGIP.Base
 
         public BaseCommand(byte[] bytes)
         {
-            this.TotalMessageLength = ToUInt32(bytes, 0, 4);
-            if (bytes.Length != this.TotalMessageLength) throw new Exception("消息接收不完整");
-
-            this.Command = ToUInt32(bytes, 4, 4);
-            this.SequenceNumber = new byte[12];
-            Array.Copy(bytes, 8, this.SequenceNumber, 0, 12);
-            this.NodeNumber = ToUInt32(this.SequenceNumber, 0, 4);
-            this.DateTime = ToUInt32(this.SequenceNumber, 4, 4);
-            this.OrdinalNumber = ToUInt32(this.SequenceNumber, 8, 4);
+            try
+            {
+                this.TotalMessageLength = ToUInt32(bytes, 0, 4);
+                this.Command = ToUInt32(bytes, 4, 4);
+                this.SequenceNumber = new byte[12];
+                Array.Copy(bytes, 8, this.SequenceNumber, 0, 12);
+                this.NodeNumber = ToUInt32(this.SequenceNumber, 0, 4);
+                this.DateTime = ToUInt32(this.SequenceNumber, 4, 4);
+                this.OrdinalNumber = ToUInt32(this.SequenceNumber, 8, 4);
+            }
+            catch
+            {
+                throw new BadCmdHeadException();
+            }
         }
 
         public virtual byte[] GetBytes()
@@ -141,12 +161,11 @@ namespace SMG.SGIP.Base
         {
             Type t = this.GetType();
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine(t.Name + " fields info ： ");
 
-            foreach (var field in t.GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
+            foreach (var prop in t.GetProperties())
             {
-                var v = field.GetValue(this);
-                sb.AppendLine("\t" + field.Name.Substring(0, field.Name.LastIndexOf(">") + 1)
+                var v = prop.GetValue(this, null);
+                sb.AppendLine("\t" + prop.Name
                     + " = " + (v != null ? v.ToString() : "null"));
             }
 

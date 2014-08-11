@@ -39,9 +39,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base\BadCmdExceptions.cs" />
     <Compile Include="Base\BaseCommand.cs" />
     <Compile Include="Base\Commands.cs" />
-    <Compile Include="Base\ErrorCodes.cs" />
+    <Compile Include="Base\CommandError.cs" />
     <Compile Include="Base\FeeTypes.cs" />
     <Compile Include="Base\LoginTypes.cs" />
     <Compile Include="Base\MessageCodes.cs" />

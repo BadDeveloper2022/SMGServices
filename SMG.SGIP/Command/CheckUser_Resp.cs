@@ -8,7 +8,7 @@ namespace SMG.SGIP.Command
 {
     public class CheckUser_Resp : BaseCommand
     {
-        #region fields
+        #region Properties
 
         /// <summary>
         /// 鉴权结果 0：鉴权成功 其它：错误码 1字节
@@ -30,10 +30,17 @@ namespace SMG.SGIP.Command
         public CheckUser_Resp(byte[] bytes)
             : base(bytes)
         {
-            int offset = HEADER_LENGTH;
-            this.Result = bytes[offset];
-            offset++;
-            this.Status = bytes[offset];
+            try
+            {
+                int offset = HEADER_LENGTH;
+                this.Result = bytes[offset];
+                offset++;
+                this.Status = bytes[offset];
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.CheckUser_Resp);
+            }
         }
 
         public override byte[] GetBytes()
@@ -41,13 +48,20 @@ namespace SMG.SGIP.Command
             byte[] bytes = new byte[HEADER_LENGTH + 1 + 1 + 8];
             base.TotalMessageLength = (uint)bytes.Length;
 
-            //消息头
-            base.Headers.CopyTo(bytes, 0);
-            //消息体
-            int offset = HEADER_LENGTH;
-            bytes[offset] = (byte)Result;
-            offset++;
-            bytes[offset] = (byte)Status;
+            try
+            {
+                //消息头
+                base.Headers.CopyTo(bytes, 0);
+                //消息体
+                int offset = HEADER_LENGTH;
+                bytes[offset] = (byte)Result;
+                offset++;
+                bytes[offset] = (byte)Status;
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.CheckUser_Resp);
+            }
 
             return bytes;
         }

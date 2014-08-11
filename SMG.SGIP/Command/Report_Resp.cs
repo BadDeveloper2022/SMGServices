@@ -8,7 +8,7 @@ namespace SMG.SGIP.Command
 {
     public class Report_Resp : BaseCommand
     {
-        #region fields
+        #region Properties
 
         /// <summary>
         /// 结果 1字节
@@ -24,7 +24,14 @@ namespace SMG.SGIP.Command
 
         public Report_Resp(byte[] bytes)
         {
-            this.Result = bytes[HEADER_LENGTH];
+            try
+            {
+                this.Result = bytes[HEADER_LENGTH];
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.Report_Resp);
+            }
         }
 
         public override byte[] GetBytes()
@@ -32,11 +39,18 @@ namespace SMG.SGIP.Command
             byte[] buffer = new byte[HEADER_LENGTH + 1 + 8];
             base.TotalMessageLength = (uint)buffer.Length;
 
-            //消息头
-            base.Headers.CopyTo(buffer, 0);
-            //消息体
-            int offset = HEADER_LENGTH;
-            buffer[offset] = (byte)Result;
+            try
+            {
+                //消息头
+                base.Headers.CopyTo(buffer, 0);
+                //消息体
+                int offset = HEADER_LENGTH;
+                buffer[offset] = (byte)Result;
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.Report_Resp);
+            }
 
             return buffer;
         }

@@ -8,7 +8,7 @@ namespace SMG.SGIP.Command
 {
     public class Submit : BaseCommand
     {
-        #region fields
+        #region Properties
 
         /// <summary>
         /// SP的接入号码 21字节
@@ -145,61 +145,68 @@ namespace SMG.SGIP.Command
         public Submit(byte[] bytes)
             : base(bytes)
         {
-            int offset = HEADER_LENGTH;
-            this.SPNumber = GetString(bytes, offset, 21);
-            offset += 21;
-            this.ChargeNumber = GetString(bytes, offset, 21);
-            offset += 21;
-            this.UserCount = bytes[offset];
-            offset++;
-            this.UserNumber = GetString(bytes, offset, 21);
-            offset += 21;
-            this.CorpId = GetString(bytes, offset, 5);
-            offset += 5;
-            this.ServiceType = GetString(bytes, offset, 10);
-            offset += 10;
-            this.FeeType = bytes[offset];
-            offset++;
-            this.FeeValue = GetString(bytes, offset, 6);
-            offset += 6;
-            this.GivenValue = GetString(bytes, offset, 6);
-            offset += 6;
-            this.AgentFlag = bytes[offset];
-            offset++;
-            this.MorelatetoMTFlag = bytes[offset];
-            offset++;
-            this.Priority = bytes[offset];
-            offset++;
-            this.ExpireTime = GetString(bytes, offset, 16);
-            offset += 16;
-            this.ScheduleTime = GetString(bytes, offset, 16);
-            offset += 16;
-            this.ReportFlag = bytes[offset];
-            offset++;
-            this.TP_pid = bytes[offset];
-            offset++;
-            this.TP_udhi = bytes[offset];
-            offset++;
-            this.MessageCoding = bytes[offset];
-            offset++;
-            this.MessageType = bytes[offset];
-            offset++;
-            this.MessageLength = ToUInt32(bytes, offset, 4);
-            offset += 4;
-            switch (this.MessageCoding)
+            try
             {
-                case MessageCodes.ASIIC:
-                    this.MessageContent = GetString(bytes, offset, (int)this.MessageLength);
-                    break;
-                case MessageCodes.UCS2:
-                    this.MessageContent = GetString(Encoding.GetEncoding("utf-16"), bytes, offset, (int)this.MessageLength);
-                    break;
-                case MessageCodes.GBK:
-                    this.MessageContent = GetString(Encoding.BigEndianUnicode, bytes, offset, (int)this.MessageLength);
-                    break;
-                default:
-                    this.MessageContent = GetString(Encoding.Default, bytes, offset, (int)this.MessageLength);
-                    break;
+                int offset = HEADER_LENGTH;
+                this.SPNumber = GetString(bytes, offset, 21);
+                offset += 21;
+                this.ChargeNumber = GetString(bytes, offset, 21);
+                offset += 21;
+                this.UserCount = bytes[offset];
+                offset++;
+                this.UserNumber = GetString(bytes, offset, 21);
+                offset += 21;
+                this.CorpId = GetString(bytes, offset, 5);
+                offset += 5;
+                this.ServiceType = GetString(bytes, offset, 10);
+                offset += 10;
+                this.FeeType = bytes[offset];
+                offset++;
+                this.FeeValue = GetString(bytes, offset, 6);
+                offset += 6;
+                this.GivenValue = GetString(bytes, offset, 6);
+                offset += 6;
+                this.AgentFlag = bytes[offset];
+                offset++;
+                this.MorelatetoMTFlag = bytes[offset];
+                offset++;
+                this.Priority = bytes[offset];
+                offset++;
+                this.ExpireTime = GetString(bytes, offset, 16);
+                offset += 16;
+                this.ScheduleTime = GetString(bytes, offset, 16);
+                offset += 16;
+                this.ReportFlag = bytes[offset];
+                offset++;
+                this.TP_pid = bytes[offset];
+                offset++;
+                this.TP_udhi = bytes[offset];
+                offset++;
+                this.MessageCoding = bytes[offset];
+                offset++;
+                this.MessageType = bytes[offset];
+                offset++;
+                this.MessageLength = ToUInt32(bytes, offset, 4);
+                offset += 4;
+                switch (this.MessageCoding)
+                {
+                    case MessageCodes.ASIIC:
+                        this.MessageContent = GetString(bytes, offset, (int)this.MessageLength);
+                        break;
+                    case MessageCodes.UCS2:
+                        this.MessageContent = GetString(Encoding.GetEncoding("utf-16"), bytes, offset, (int)this.MessageLength);
+                        break;
+                    case MessageCodes.GBK:
+                        this.MessageContent = GetString(Encoding.BigEndianUnicode, bytes, offset, (int)this.MessageLength);
+                        break;
+                    default:
+                        this.MessageContent = GetString(Encoding.Default, bytes, offset, (int)this.MessageLength);
+                        break;
+                }
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.Submit);
             }
         }
 
@@ -210,88 +217,94 @@ namespace SMG.SGIP.Command
 
             //消息体
             int offset = HEADER_LENGTH;
-            byte[] snbts = GetBytes(SPNumber);
-            Array.Copy(snbts, 0, bytes, offset, snbts.Length);
-            offset += 21;
-            byte[] cnbts = GetBytes(ChargeNumber);
-            Array.Copy(cnbts, 0, bytes, offset, cnbts.Length);
-            offset += 21;
-            bytes[offset] = (byte)UserCount;
-            offset++;
-            byte[] unbts = GetBytes(UserNumber);
-            Array.Copy(unbts, 0, bytes, offset, unbts.Length);
-            offset += 21;
-            byte[] cpbts = GetBytes(CorpId);
-            Array.Copy(cpbts, 0, bytes, offset, cpbts.Length);
-            offset += 5;
-            byte[] stbts = GetBytes(ServiceType);
-            Array.Copy(stbts, 0, bytes, offset, stbts.Length);
-            offset += 10;
-            bytes[offset] = (byte)FeeType;
-            offset++;
-            byte[] fvbts = GetBytes(FeeValue);
-            Array.Copy(fvbts, 0, bytes, offset, fvbts.Length);
-            offset += 6;
-            byte[] gvbts = GetBytes(GivenValue);
-            Array.Copy(gvbts, 0, bytes, offset, gvbts.Length);
-            offset += 6;
-            bytes[offset] = (byte)AgentFlag;
-            offset++;
-            bytes[offset] = (byte)MorelatetoMTFlag;
-            offset++;
-            bytes[offset] = (byte)Priority;
-            offset++;
-            if (!string.IsNullOrEmpty(ExpireTime))
+            try
             {
-                byte[] etbts = GetBytes(ExpireTime);
-                Array.Copy(etbts, 0, bytes, offset, etbts.Length);
-            }
-            offset += 16;
-            if (!string.IsNullOrEmpty(ScheduleTime))
-            {
-                byte[] sctbts = GetBytes(ScheduleTime);
-                Array.Copy(sctbts, 0, bytes, offset, sctbts.Length);
-            }
-            offset += 16;
-            bytes[offset] = (byte)ReportFlag;
-            offset++;
-            bytes[offset] = (byte)TP_pid;
-            offset++;
-            bytes[offset] = (byte)TP_udhi;
-            offset++;
-            bytes[offset] = (byte)MessageCoding;
-            offset++;
-            bytes[offset] = (byte)MessageType;
-            offset++;
-            byte[] mcbts = null;
-            switch (this.MessageCoding)
-            {
-                case MessageCodes.ASIIC:
-                    mcbts = GetBytes(this.MessageContent);
-                    break;
-                case MessageCodes.UCS2:
-                    mcbts = GetBytes(Encoding.GetEncoding("utf-16"), this.MessageContent);
-                    break;
-                case MessageCodes.GBK:
-                    mcbts = GetBytes(Encoding.BigEndianUnicode, this.MessageContent);
-                    break;
-                default:
-                    mcbts = GetBytes(Encoding.Default, this.MessageContent);
-                    break;
-            }
-            this.MessageLength = (uint)mcbts.Length;
-            byte[] mlbts = GetBytes(this.MessageLength);
-            Array.Copy(mlbts, 0, bytes, offset, mlbts.Length);
-            offset += 4;
-            Array.Copy(mcbts, 0, bytes, offset, mcbts.Length);
-            offset += mcbts.Length;
-            //保留字段
-            offset += 8;
+                byte[] snbts = GetBytes(SPNumber);
+                Array.Copy(snbts, 0, bytes, offset, snbts.Length);
+                offset += 21;
+                byte[] cnbts = GetBytes(ChargeNumber);
+                Array.Copy(cnbts, 0, bytes, offset, cnbts.Length);
+                offset += 21;
+                bytes[offset] = (byte)UserCount;
+                offset++;
+                byte[] unbts = GetBytes(UserNumber);
+                Array.Copy(unbts, 0, bytes, offset, unbts.Length);
+                offset += 21;
+                byte[] cpbts = GetBytes(CorpId);
+                Array.Copy(cpbts, 0, bytes, offset, cpbts.Length);
+                offset += 5;
+                byte[] stbts = GetBytes(ServiceType);
+                Array.Copy(stbts, 0, bytes, offset, stbts.Length);
+                offset += 10;
+                bytes[offset] = (byte)FeeType;
+                offset++;
+                byte[] fvbts = GetBytes(FeeValue);
+                Array.Copy(fvbts, 0, bytes, offset, fvbts.Length);
+                offset += 6;
+                byte[] gvbts = GetBytes(GivenValue);
+                Array.Copy(gvbts, 0, bytes, offset, gvbts.Length);
+                offset += 6;
+                bytes[offset] = (byte)AgentFlag;
+                offset++;
+                bytes[offset] = (byte)MorelatetoMTFlag;
+                offset++;
+                bytes[offset] = (byte)Priority;
+                offset++;
+                if (!string.IsNullOrEmpty(ExpireTime))
+                {
+                    byte[] etbts = GetBytes(ExpireTime);
+                    Array.Copy(etbts, 0, bytes, offset, etbts.Length);
+                }
+                offset += 16;
+                if (!string.IsNullOrEmpty(ScheduleTime))
+                {
+                    byte[] sctbts = GetBytes(ScheduleTime);
+                    Array.Copy(sctbts, 0, bytes, offset, sctbts.Length);
+                }
+                offset += 16;
+                bytes[offset] = (byte)ReportFlag;
+                offset++;
+                bytes[offset] = (byte)TP_pid;
+                offset++;
+                bytes[offset] = (byte)TP_udhi;
+                offset++;
+                bytes[offset] = (byte)MessageCoding;
+                offset++;
+                bytes[offset] = (byte)MessageType;
+                offset++;
+                byte[] mcbts = null;
+                switch (this.MessageCoding)
+                {
+                    case MessageCodes.ASIIC:
+                        mcbts = GetBytes(this.MessageContent);
+                        break;
+                    case MessageCodes.UCS2:
+                        mcbts = GetBytes(Encoding.GetEncoding("utf-16"), this.MessageContent);
+                        break;
+                    case MessageCodes.GBK:
+                        mcbts = GetBytes(Encoding.BigEndianUnicode, this.MessageContent);
+                        break;
+                    default:
+                        mcbts = GetBytes(Encoding.Default, this.MessageContent);
+                        break;
+                }
+                this.MessageLength = (uint)mcbts.Length;
+                byte[] mlbts = GetBytes(this.MessageLength);
+                Array.Copy(mlbts, 0, bytes, offset, mlbts.Length);
+                offset += 4;
+                Array.Copy(mcbts, 0, bytes, offset, mcbts.Length);
+                offset += mcbts.Length;
+                //保留字段
+                offset += 8;
 
-            //消息头
-            base.TotalMessageLength = (uint)offset;
-            base.Headers.CopyTo(bytes, 0);
-
+                //消息头
+                base.TotalMessageLength = (uint)offset;
+                base.Headers.CopyTo(bytes, 0);
+            }
+            catch
+            {
+                throw new BadCmdBodyException(Commands.Submit);
+            }
             //发送实际的字节流
             byte[] res = new byte[offset];
             bytes.CopyTo(res, 0);
