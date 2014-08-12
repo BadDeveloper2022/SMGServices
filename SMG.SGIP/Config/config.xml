@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SGIPConfig> 
+
+  <!--通信协议-->
+  <Agreement>SGIP1.3</Agreement>
+  <!--登录类型。-->
+  <LoginType>1</LoginType>
+  <!--SGIP的网关IP地址和端口-->
+  <ServerIP>127.0.0.1</ServerIP>
+  <ServerMTPort>9001</ServerMTPort>
+  <ServerMOPort>8802</ServerMOPort>
+  
+  <!--SP接入号码-->
+  <Name>fssw2hy</Name>
+  <!--SP接入密码-->
+  <Password>fssw2hy</Password>
+  <!--SP的接入号码-->
+  <SPNumber>106559284130016</SPNumber>
+  <!--企业代码3+CP_ID-->
+  <CorpID>53016</CorpID>
+  <!--序列节点号-->
+  <NodID>3041353016</NodID>
+  
+  <!--付费号码-->
+  <ChargeNumber>8613000061234</ChargeNumber>
+  <!--业务代码-->
+  <ServiceType>0</ServiceType>
+  <!--计费类型-->
+  <FeeType>0</FeeType>
+  <!--短消息收费值-->
+  <FeeValue>0</FeeValue>
+  <!--赠送用户的话费-->
+  <GivenValue>0</GivenValue>
+  <!--代收费标志，0：应收；1：实收-->
+  <AgentFlag>0</AgentFlag>
+  <!--引起MT消息的原因-->
+  <MorelatetoMTFlag>1</MorelatetoMTFlag>
+  <!--优先级0-9从低到高，默认为0-->
+  <Priority>9</Priority>
+  <!--状态报告标记-->
+  <ReportFlag>1</ReportFlag>
+  <!--GSM协议类型-->
+  <TP_pid>1</TP_pid>
+  <!--GSM协议类型-->
+  <TP_udhi>1</TP_udhi>
+  <!--短消息的编码格式-->
+  <MessageCoding>15</MessageCoding>
+  <!--信息类型-->
+  <MessageType>0</MessageType>
+  
+
+</SGIPConfig>

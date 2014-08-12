@@ -64,10 +64,14 @@
     <Compile Include="Command\Submit_Resp.cs" />
     <Compile Include="Command\UnBind.cs" />
     <Compile Include="Command\UnBind_Resp.cs" />
+    <Compile Include="Config\SGIPConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Doc\SGIP-protocol.doc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\config.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

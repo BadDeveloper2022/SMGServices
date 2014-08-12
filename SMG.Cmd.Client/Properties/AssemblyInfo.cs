@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("SMG.CmdApp")]
+[assembly: AssemblyTitle("SMG.Cmd.Client")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SMG.CmdApp")]
+[assembly: AssemblyProduct("SMG.Cmd.Client")]
 [assembly: AssemblyCopyright("Copyright © LINFENG 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("6768c729-b833-4943-8e55-00ccea9564bb")]
+[assembly: Guid("87b77204-28f3-49a1-9895-78c4e1a9eb0f")]
 
 // 程序集的版本信息由下面四个值组成: 
 //

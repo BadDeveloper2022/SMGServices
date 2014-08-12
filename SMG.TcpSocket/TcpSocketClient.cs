@@ -68,7 +68,6 @@ namespace SMG.TcpSocket
                 if (!connected)
                 {
                     workSocket = workSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    
                     workSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(ip), port), (ar) =>
                     {
                         try
@@ -116,7 +115,7 @@ namespace SMG.TcpSocket
                     Thread.Sleep(1000);
                 }
                 readZeroCount++;
-            }          
+            }
         }
 
         private void RecvCallback(IAsyncResult ar)
@@ -225,7 +224,7 @@ namespace SMG.TcpSocket
                                 {
                                     try
                                     {
-                                        var _onSend = (RecvEventHandler)inv;
+                                        var _onSend = (SendEventHandler)inv;
                                         _onSend(this, data);
                                     }
                                     catch (Exception e)
@@ -256,11 +255,6 @@ namespace SMG.TcpSocket
             {
                 if (connected)
                 {
-                    if (recvThread != null && recvThread.IsAlive)
-                    {
-                        recvThread.Abort();
-                    }
-
                     workSocket.BeginDisconnect(false, (ar) =>
                     {
                         try

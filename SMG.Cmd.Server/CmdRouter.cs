@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SMG.CmdApp
+namespace SMG.Cmd.Server
 {
     public class CmdRouter
     {
@@ -51,6 +51,20 @@ namespace SMG.CmdApp
             //output
             Console.WriteLine(client.LocalIPAddress + " Send <Bind> ：\n" + bind.ToString());
             Console.WriteLine("Server Send <Bind_Resp> ：\n" + resp.ToString());
+        }
+
+        private void UnBindRouter(TcpSocketClient client, UnBind ubind)
+        {
+            var resp = new UnBind_Resp()
+            {
+                SequenceNumber = ubind.SequenceNumber
+            };
+
+            client.Send(resp.GetBytes());
+
+            //output
+            Console.WriteLine(client.LocalIPAddress + " Send <UnBind> ：\n" + ubind.ToString());
+            Console.WriteLine("Server Send <UnBind_Resp> ：\n" + resp.ToString());
         }
 
         private void SubmitRouter(TcpSocketClient client, Submit submit)
@@ -159,10 +173,8 @@ namespace SMG.CmdApp
                         this.BindRouter(client, bind);
                         break;
                     case Commands.UnBind:
-                        client.Send(new UnBind_Resp()
-                        {
-                            SequenceNumber = cmd.SequenceNumber
-                        }.GetBytes());
+                        var unbind = new UnBind(buffers);
+                        this.UnBindRouter(client, unbind);
                         break;
                     case Commands.Submit:
                         var submit = new Submit(buffers);

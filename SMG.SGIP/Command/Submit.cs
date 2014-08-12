@@ -194,10 +194,10 @@ namespace SMG.SGIP.Command
                         this.MessageContent = GetString(bytes, offset, (int)this.MessageLength);
                         break;
                     case MessageCodes.UCS2:
-                        this.MessageContent = GetString(Encoding.GetEncoding("utf-16"), bytes, offset, (int)this.MessageLength);
+                        this.MessageContent = GetString(Encoding.GetEncoding("UTF-16"), bytes, offset, (int)this.MessageLength);
                         break;
                     case MessageCodes.GBK:
-                        this.MessageContent = GetString(Encoding.BigEndianUnicode, bytes, offset, (int)this.MessageLength);
+                        this.MessageContent = GetString(Encoding.GetEncoding("GBK"), bytes, offset, (int)this.MessageLength);
                         break;
                     default:
                         this.MessageContent = GetString(Encoding.Default, bytes, offset, (int)this.MessageLength);
@@ -279,10 +279,10 @@ namespace SMG.SGIP.Command
                         mcbts = GetBytes(this.MessageContent);
                         break;
                     case MessageCodes.UCS2:
-                        mcbts = GetBytes(Encoding.GetEncoding("utf-16"), this.MessageContent);
+                        mcbts = GetBytes(Encoding.GetEncoding("UTF-16"), this.MessageContent);
                         break;
                     case MessageCodes.GBK:
-                        mcbts = GetBytes(Encoding.BigEndianUnicode, this.MessageContent);
+                        mcbts = GetBytes(Encoding.GetEncoding("GBK"), this.MessageContent);
                         break;
                     default:
                         mcbts = GetBytes(Encoding.Default, this.MessageContent);

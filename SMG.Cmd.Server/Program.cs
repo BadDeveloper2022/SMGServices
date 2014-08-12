@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SMG.CmdApp
+namespace SMG.Cmd.Server
 {
     class Program
     {
@@ -24,7 +24,17 @@ namespace SMG.CmdApp
                 if (cmd != "")
                 {
                     Console.WriteLine(cmd);
-                }          
+
+                    switch (cmd)
+                    {
+                        case "clear":
+                            Console.Clear();
+                            break;
+                        default:
+                            break;
+                    }
+                }      
+    
                 Console.Write(tcpServer.BindIPAddress + ">");
                 cmd = Console.ReadLine();
             }

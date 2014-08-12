@@ -9,7 +9,7 @@ namespace SMG.SGIP.Base
     public class Sequence
     {
         private static byte[] nodeBytes = new byte[4];
-        private static uint ordinal = 0;
+        private static uint ordinal = uint.MinValue;
         private static ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace SMG.SGIP.Base
                 }
                 catch (OverflowException)
                 {
-                    ordinal = uint.MaxValue;
+                    ordinal = uint.MinValue;
                 }
 
                 return ordinal;
