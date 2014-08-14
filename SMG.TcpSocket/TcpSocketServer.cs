@@ -13,7 +13,10 @@ namespace SMG.TcpSocket
         #region events
 
         private event SendEventHandler onSend;
-        private event RecvEventHandler onRecv;
+        private event ReadEventHandler onRead;
+        private event StopEventHandler onStop;
+        private event ConnectedEventHandler onConnected;
+        private event DisconnectedEventHandler onDisconnected;
 
         public event SendEventHandler OnSend
         {
@@ -21,32 +24,53 @@ namespace SMG.TcpSocket
             remove { onSend -= value; }
         }
 
-        public event RecvEventHandler OnRecv
+        public event ReadEventHandler OnRead
         {
-            add { onRecv += value; }
-            remove { onRecv -= value; }
+            add { onRead += value; }
+            remove { onRead -= value; }
+        }
+
+        public event StopEventHandler OnStop
+        {
+            add { onStop += value; }
+            remove { onStop -= value; }
+        }
+
+        public event ConnectedEventHandler OnConnected
+        {
+            add { onConnected += value; }
+            remove { onConnected -= value; }
+        }
+
+        public event DisconnectedEventHandler OnDisconnected
+        {
+            add { onDisconnected += value; }
+            remove { onDisconnected -= value; }
         }
 
         #endregion
 
         private string ip;
-        private int port;
-        private bool listened;
-        private int poolSize;
+        private int port;             
         private Socket workSocket;
         private Thread acceptThread;
         private ManualResetEvent accpetDone;
+        private ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
+
+        public int BackLog { get; private set; }
+
+        public bool Listened { get; private set; }
 
         public string BindIPAddress
         {
             get
             {
-                if (workSocket != null)
+                if (workSocket != null && Listened)
                 {
                     return workSocket.LocalEndPoint.ToString();
                 }
 
-                return "nil"; 
+                return "";
             }
         }
 
@@ -55,20 +79,19 @@ namespace SMG.TcpSocket
             this.ip = ip;
             this.port = port;
             this.accpetDone = new ManualResetEvent(false);
-            
         }
 
         public void Listen(int poolSize)
         {
             try
             {
-                if (!listened)
+                if (!Listened)
                 {
                     workSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     workSocket.Bind(new IPEndPoint(IPAddress.Parse(ip), port));
                     workSocket.Listen(poolSize);
-                    listened = true;
-                    this.poolSize = poolSize;
+                    Listened = true;
+                    this.BackLog = poolSize;
 
                     if (acceptThread != null && acceptThread.IsAlive)
                     {
@@ -77,7 +100,7 @@ namespace SMG.TcpSocket
 
                     acceptThread = new Thread(() =>
                     {
-                        while (listened)
+                        while (Listened)
                         {
                             accpetDone.Reset();
 
@@ -85,13 +108,32 @@ namespace SMG.TcpSocket
                             {
                                 try
                                 {
-                                    var client = workSocket.EndAccept(ar);
-                                    var tcpClient = new TcpSocketClient(client);
-                                    tcpClient.OnRecv += onRecv;
-                                    tcpClient.OnSend += onSend;
-                                    tcpClient.Start();
+                                    if (Listened)
+                                    {
+                                        var client = workSocket.EndAccept(ar);
+                                        var tcpClient = new TcpSocketClient(client);
+                                        tcpClient.OnRead += onRead;
+                                        tcpClient.OnSend += onSend;
+                                        tcpClient.OnDisconnected += onDisconnected;
+                                        tcpClient.Start();
 
-                                    Console.WriteLine(client.RemoteEndPoint.ToString() + " 已连接");
+                                        if (onConnected != null)
+                                        {
+                                            //执行所有接受委托事件
+                                            foreach (var inv in onConnected.GetInvocationList())
+                                            {
+                                                try
+                                                {
+                                                    var _onConnected = (ConnectedEventHandler)inv;
+                                                    _onConnected(tcpClient);
+                                                }
+                                                catch (Exception e)
+                                                {
+                                                    Console.WriteLine("Invoke Delegate OnConnected Catch ：" + e);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                                 catch (SocketException e)
                                 {
@@ -112,9 +154,52 @@ namespace SMG.TcpSocket
             }
             catch (Exception e)
             {
-                listened = false;
+                Listened = false;
                 Console.WriteLine(e);
             }
+        }
+
+        public void Stop()
+        {
+            locker.EnterWriteLock();
+
+            if (Listened)
+            {
+                try
+                {
+                    Listened = false;
+
+                    if (acceptThread != null && acceptThread.IsAlive)
+                    {
+                        acceptThread.Abort();
+                    }
+
+                    if (onStop != null)
+                    {
+                        //执行所有接受委托事件
+                        foreach (var inv in onStop.GetInvocationList())
+                        {
+                            try
+                            {
+                                var _onStop = (StopEventHandler)inv;
+                                _onStop();
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Invoke Delegate OnStop Catch ：" + e);
+                            }
+                        }
+                    }
+                    
+                    workSocket.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
+
+            locker.ExitWriteLock();
         }
 
     }

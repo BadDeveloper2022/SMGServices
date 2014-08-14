@@ -156,7 +156,7 @@ namespace SMG.SGIP.Command
 
             //发送实际的字节流
             byte[] res = new byte[offset];
-            bytes.CopyTo(res, 0);
+            Array.Copy(bytes, 0, res, 0, offset);
 
             return res;
         }

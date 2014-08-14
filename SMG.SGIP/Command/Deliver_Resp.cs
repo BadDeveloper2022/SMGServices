@@ -23,6 +23,7 @@ namespace SMG.SGIP.Command
         }
 
         public Deliver_Resp(byte[] bytes)
+            : base(bytes)
         {
             try
             {

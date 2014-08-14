@@ -13,8 +13,22 @@ namespace SMG.TcpSocket
     {
         #region events
 
+        private event ConnectedEventHandler onConnected;
+        private event DisconnectedEventHandler onDisconnected;
         private event SendEventHandler onSend;
-        private event RecvEventHandler onRecv;
+        private event ReadEventHandler onRead;
+
+        public event ConnectedEventHandler OnConnected
+        {
+            add { onConnected += value; }
+            remove { onConnected -= value; }
+        }
+
+        public event DisconnectedEventHandler OnDisconnected
+        {
+            add { onDisconnected += value; }
+            remove { onDisconnected -= value; }
+        }
 
         public event SendEventHandler OnSend
         {
@@ -22,10 +36,10 @@ namespace SMG.TcpSocket
             remove { onSend -= value; }
         }
 
-        public event RecvEventHandler OnRecv
+        public event ReadEventHandler OnRead
         {
-            add { onRecv += value; }
-            remove { onRecv -= value; }
+            add { onRead += value; }
+            remove { onRead -= value; }
         }
 
         #endregion
@@ -33,8 +47,6 @@ namespace SMG.TcpSocket
         private string ip;
         private int port;
         private byte[] buffer;
-        //private List<byte> recvbuffers;
-        private bool connected;
         private Socket workSocket;
         private Thread recvThread;
         private ManualResetEvent recvDone;
@@ -42,11 +54,14 @@ namespace SMG.TcpSocket
 
         public string LocalIPAddress { get; private set; }
 
+        public string RemoteIPAddress { get; private set; }
+
+        public bool Connected { get; private set; }
+
         public TcpSocketClient(string ip, int port)
         {
             this.ip = ip;
             this.port = port;
-            //this.recvbuffers = new List<byte>();
             this.buffer = new byte[TransferSet.BufferSize];
             recvDone = new ManualResetEvent(false);
         }
@@ -54,18 +69,18 @@ namespace SMG.TcpSocket
         public TcpSocketClient(Socket socket)
         {
             this.workSocket = socket;
-            //this.recvbuffers = new List<byte>();
             this.buffer = new byte[TransferSet.BufferSize];
             recvDone = new ManualResetEvent(false);
             this.LocalIPAddress = socket.RemoteEndPoint.ToString();
-            connected = true;
+            this.RemoteIPAddress = socket.LocalEndPoint.ToString();
+            Connected = true;
         }
 
         public void Connect()
         {
             try
             {
-                if (!connected)
+                if (!Connected)
                 {
                     workSocket = workSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     workSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(ip), port), (ar) =>
@@ -73,12 +88,34 @@ namespace SMG.TcpSocket
                         try
                         {
                             workSocket.EndConnect(ar);
-                            connected = true;
+                            Connected = true;
                             this.LocalIPAddress = workSocket.LocalEndPoint.ToString();
+                            this.RemoteIPAddress = workSocket.RemoteEndPoint.ToString();
+
+                            if (onConnected != null)
+                            {
+                                //执行所有接受委托事件
+                                foreach (var inv in onConnected.GetInvocationList())
+                                {
+                                    try
+                                    {
+                                        var _onConnected = (ConnectedEventHandler)inv;
+                                        _onConnected(this);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine("Invoke Delegate OnConnected Catch ：" + e);
+                                    }
+                                }
+                            }
                         }
                         catch (SocketException e)
                         {
                             SocketExceptionHandler(e);
+                        }
+                        catch (ObjectDisposedException e)
+                        {
+                            Console.WriteLine(e);
                         }
                     }, null);
                 }
@@ -132,19 +169,19 @@ namespace SMG.TcpSocket
                     Buffer.BlockCopy(buffer, 0, data, 0, len);
                     buffer = new byte[TransferSet.BufferSize];
 
-                    if (onRecv != null)
+                    if (onRead != null)
                     {
                         //执行所有接受委托事件
-                        foreach (var inv in onRecv.GetInvocationList())
+                        foreach (var inv in onRead.GetInvocationList())
                         {
                             try
                             {
-                                var _onRecv = (RecvEventHandler)inv;
-                                _onRecv(this, data);
+                                var _onRead = (ReadEventHandler)inv;
+                                _onRead(this, data);
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine("Invoke Delegate OnRecv Catch ：" + e);
+                                Console.WriteLine("Invoke Delegate OnRead Catch ：" + e);
                             }
                         }
                     }
@@ -168,7 +205,7 @@ namespace SMG.TcpSocket
 
         public void Start()
         {
-            if (connected)
+            if (Connected)
             {
                 try
                 {
@@ -181,7 +218,7 @@ namespace SMG.TcpSocket
                     {
                         try
                         {
-                            while (connected)
+                            while (Connected)
                             {
                                 recvDone.Reset();
                                 workSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(RecvCallback), null);
@@ -207,7 +244,7 @@ namespace SMG.TcpSocket
         {
             try
             {
-                if (connected)
+                if (Connected)
                 {
                     workSocket.BeginSend(data, 0, data.Length, SocketFlags.None, (ar) =>
                     {
@@ -253,10 +290,27 @@ namespace SMG.TcpSocket
 
             try
             {
-                if (connected)
+                if (Connected)
                 {
                     workSocket.BeginDisconnect(false, (ar) =>
                     {
+                        if (onDisconnected != null)
+                        {
+                            //执行所有接受委托事件
+                            foreach (var inv in onDisconnected.GetInvocationList())
+                            {
+                                try
+                                {
+                                    var _onDisconnected = (DisconnectedEventHandler)inv;
+                                    _onDisconnected(this);
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine("Invoke Delegate OnDisconnected Catch ：" + e);
+                                }
+                            }
+                        }
+
                         try
                         {
                             workSocket.EndDisconnect(ar);
@@ -268,7 +322,7 @@ namespace SMG.TcpSocket
                         }
                         finally
                         {
-                            connected = false;
+                            Connected = false;
 
                             try
                             {
@@ -278,8 +332,6 @@ namespace SMG.TcpSocket
                             {
                                 Console.WriteLine(e);
                             }
-
-                            Console.WriteLine(this.LocalIPAddress + " 已断开连接");
                         }
                     }, null);
                 }

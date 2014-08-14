@@ -22,7 +22,8 @@ namespace SMG.SGIP.Command
             base.Command = Commands.Report_Resp;
         }
 
-        public Report_Resp(byte[] bytes)
+        public Report_Resp(byte[] bytes) :
+            base(bytes)
         {
             try
             {

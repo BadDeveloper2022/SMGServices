@@ -47,7 +47,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SocketEventHandler.cs" />
     <Compile Include="TcpSocketClient.cs" />
-    <Compile Include="TcpSocketPool.cs" />
     <Compile Include="TcpSocketServer.cs" />
     <Compile Include="TransferSet.cs" />
   </ItemGroup>

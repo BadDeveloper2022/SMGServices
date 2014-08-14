@@ -22,7 +22,8 @@ namespace SMG.SGIP.Command
             base.Command = Commands.Submit_Resp;
         }
 
-        public Submit_Resp(byte[] bytes)
+        public Submit_Resp(byte[] bytes) :
+            base(bytes)
         {
             try
             {

@@ -46,6 +46,5 @@ namespace SMG.SGIP.Base
         /// SP与SMG以及SMG之间建立的测试连接，用于跟踪测试
         /// </summary>
         public const uint Test = 11;
-
     }
 }
