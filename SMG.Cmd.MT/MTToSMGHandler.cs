@@ -49,6 +49,8 @@ namespace SMG.Cmd.MT
 
         public void OnRead(TcpSocketClient client, byte[] buffers)
         {
+            Console.Write("\n");
+
             try
             {
                 var cmd = new BaseCommand(buffers);
@@ -57,7 +59,7 @@ namespace SMG.Cmd.MT
                 {
                     case Commands.Bind_Resp:
                         var bindresp = new Bind_Resp(buffers);
-                        Console.WriteLine(title + "\nServer Send <Bind_Resp> ：\n" + bindresp.ToString());
+                        Console.WriteLine(title + "Server Send <Bind_Resp> ：\n" + bindresp.ToString());
                         break;
                     case Commands.Deliver:
                         var deliver = new Deliver(buffers);
@@ -66,11 +68,11 @@ namespace SMG.Cmd.MT
                             SequenceNumber = deliver.SequenceNumber,
                             Result = 0
                         }.GetBytes());
-                        Console.WriteLine(title + "\nServer Send <Deliver> ：\n" + deliver.ToString());
+                        Console.WriteLine(title + "Server Send <Deliver> ：\n" + deliver.ToString());
                         break;
                     case Commands.Deliver_Resp:
                         var deliver_resp = new Deliver_Resp(buffers);
-                        Console.WriteLine(title + "\nServer Send <Deliver_Resp> ：\n" + deliver_resp.ToString());
+                        Console.WriteLine(title + "Server Send <Deliver_Resp> ：\n" + deliver_resp.ToString());
                         break;
                     default:
                         break;
