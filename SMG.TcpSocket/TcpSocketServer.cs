@@ -18,6 +18,7 @@ namespace SMG.TcpSocket
         private event StopEventHandler onStop;
         private event ConnectedEventHandler onConnected;
         private event DisconnectedEventHandler onDisconnected;
+        private event ExceptionEventHandler onException;
 
         public event StartEventHandler OnStart
         {
@@ -53,6 +54,12 @@ namespace SMG.TcpSocket
         {
             add { onDisconnected += value; }
             remove { onDisconnected -= value; }
+        }
+
+        public event ExceptionEventHandler OnException
+        {
+            add { onException += value; }
+            remove { onException -= value; }
         }
 
         #endregion
@@ -144,7 +151,7 @@ namespace SMG.TcpSocket
                                 }
                                 catch (SocketException e)
                                 {
-                                    Console.WriteLine(e);
+                                    onException(e);
                                 }
                                 finally
                                 {
@@ -179,7 +186,7 @@ namespace SMG.TcpSocket
             catch (Exception e)
             {
                 Listened = false;
-                Console.WriteLine(e);
+                onException(e);
             }
         }
 
@@ -219,7 +226,7 @@ namespace SMG.TcpSocket
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    onException(e);
                 }
             }
 

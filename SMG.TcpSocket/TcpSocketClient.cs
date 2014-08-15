@@ -17,6 +17,7 @@ namespace SMG.TcpSocket
         private event DisconnectedEventHandler onDisconnected;
         private event SendEventHandler onSend;
         private event ReadEventHandler onRead;
+        private event ExceptionEventHandler onException;
 
         public event ConnectedEventHandler OnConnected
         {
@@ -40,6 +41,12 @@ namespace SMG.TcpSocket
         {
             add { onRead += value; }
             remove { onRead -= value; }
+        }
+
+        public event ExceptionEventHandler OnException
+        {
+            add { onException += value; }
+            remove { onException -= value; }
         }
 
         #endregion
@@ -115,14 +122,14 @@ namespace SMG.TcpSocket
                         }
                         catch (ObjectDisposedException e)
                         {
-                            Console.WriteLine(e);
+                            onException(e);
                         }
                     }, null);
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                onException(e);
             }
         }
 
@@ -161,37 +168,40 @@ namespace SMG.TcpSocket
 
             try
             {
-                int len = workSocket.EndReceive(ar, out sokcetError);
-                //每个消息长度不超过2K
-                if (len > 0)
+                if (Connected)
                 {
-                    byte[] data = new byte[len];
-                    Buffer.BlockCopy(buffer, 0, data, 0, len);
-                    buffer = new byte[TransferSet.BufferSize];
-
-                    if (onRead != null)
+                    int len = workSocket.EndReceive(ar, out sokcetError);
+                    //每个消息长度不超过2K
+                    if (len > 0)
                     {
-                        //执行所有接受委托事件
-                        foreach (var inv in onRead.GetInvocationList())
+                        byte[] data = new byte[len];
+                        Buffer.BlockCopy(buffer, 0, data, 0, len);
+                        buffer = new byte[TransferSet.BufferSize];
+
+                        if (onRead != null)
                         {
-                            try
+                            //执行所有接受委托事件
+                            foreach (var inv in onRead.GetInvocationList())
                             {
-                                var _onRead = (ReadEventHandler)inv;
-                                _onRead(this, data);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine("Invoke Delegate OnRead Catch Exception \n" + e);
+                                try
+                                {
+                                    var _onRead = (ReadEventHandler)inv;
+                                    _onRead(this, data);
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine("Invoke Delegate OnRead Catch Exception \n" + e);
+                                }
                             }
                         }
-                    }
 
-                    //重置0字节读取次数
-                    ResetZeroRecvCount();
-                }
-                else
-                {
-                    ZeroRecvHandle();
+                        //重置0字节读取次数
+                        ResetZeroRecvCount();
+                    }
+                    else
+                    {
+                        ZeroRecvHandle();
+                    }
                 }
 
                 recvDone.Set();
@@ -235,7 +245,7 @@ namespace SMG.TcpSocket
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    onException(e);
                 }
             }
         }
@@ -318,7 +328,7 @@ namespace SMG.TcpSocket
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine(e);
+                            onException(e);
                         }
                         finally
                         {
@@ -330,7 +340,7 @@ namespace SMG.TcpSocket
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine(e);
+                                onException(e);
                             }
                         }
                     }, null);
@@ -338,7 +348,7 @@ namespace SMG.TcpSocket
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                onException(e);
             }
 
             locker.ExitWriteLock();
@@ -353,7 +363,7 @@ namespace SMG.TcpSocket
             }
             else
             {
-                Console.WriteLine(e);
+                onException(e);
             }
         }
 

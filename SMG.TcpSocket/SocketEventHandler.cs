@@ -9,6 +9,8 @@ namespace SMG.TcpSocket
 
     public delegate void StopEventHandler(TcpSocketServer server);
 
+    public delegate void ExceptionEventHandler(Exception exception);
+
     public delegate void ConnectedEventHandler(TcpSocketClient client);
 
     public delegate void DisconnectedEventHandler(TcpSocketClient client);
