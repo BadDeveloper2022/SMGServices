@@ -34,12 +34,18 @@ namespace SMG.Cmd.SMG
             this.title = tcpServer.BindIPAddress + "(SMGToSP)>";
             tcpServer.OnConnected += this.OnConnected;
             tcpServer.OnDisconnected += this.OnDisconnected;
+            tcpServer.OnStart += this.OnStart;
             tcpServer.OnStop += this.OnStop;
             tcpServer.OnRead += this.OnRead;
             tcpServer.OnSend += this.OnSend;
         }
 
-        public void OnStop()
+        public void OnStart(TcpSocketServer server)
+        {
+            Console.WriteLine(server.BindIPAddress + "(SMGToSP)>网关服务已启动！");
+        }
+
+        public void OnStop(TcpSocketServer server)
         {
             for (int i = 0; i < spPool.Count; i++)
             {
@@ -241,7 +247,7 @@ namespace SMG.Cmd.SMG
             }
             finally
             {
-                Console.WriteLine(">");
+                Console.Write(">");
             }
         }
     }

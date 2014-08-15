@@ -30,8 +30,8 @@ namespace SMG.Cmd.MT
 
             client.Send(new Bind
             {
-                LoginName = "8613020320822",
-                LoginPassword = "8613020320822",
+                LoginName = Program.UserName,
+                LoginPassword = Program.UserName,
                 LoginType = LoginTypes.Test
             }.GetBytes());
             Console.WriteLine(title + "已连接到服务器 " + client.RemoteIPAddress);
@@ -84,7 +84,7 @@ namespace SMG.Cmd.MT
             }
             finally
             {
-                Console.WriteLine(">");
+                Console.Write(">");
             }
         }
 

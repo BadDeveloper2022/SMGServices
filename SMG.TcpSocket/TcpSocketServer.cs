@@ -14,9 +14,22 @@ namespace SMG.TcpSocket
 
         private event SendEventHandler onSend;
         private event ReadEventHandler onRead;
+        private event StartEventHandler onStart;
         private event StopEventHandler onStop;
         private event ConnectedEventHandler onConnected;
         private event DisconnectedEventHandler onDisconnected;
+
+        public event StartEventHandler OnStart
+        {
+            add { onStart += value; }
+            remove { onStart -= value; }
+        }
+
+        public event StopEventHandler OnStop
+        {
+            add { onStop += value; }
+            remove { onStop -= value; }
+        }
 
         public event SendEventHandler OnSend
         {
@@ -28,12 +41,6 @@ namespace SMG.TcpSocket
         {
             add { onRead += value; }
             remove { onRead -= value; }
-        }
-
-        public event StopEventHandler OnStop
-        {
-            add { onStop += value; }
-            remove { onStop -= value; }
         }
 
         public event ConnectedEventHandler OnConnected
@@ -51,7 +58,7 @@ namespace SMG.TcpSocket
         #endregion
 
         private string ip;
-        private int port;             
+        private int port;
         private Socket workSocket;
         private Thread acceptThread;
         private ManualResetEvent accpetDone;
@@ -129,7 +136,7 @@ namespace SMG.TcpSocket
                                                 }
                                                 catch (Exception e)
                                                 {
-                                                    Console.WriteLine("Invoke Delegate OnConnected Catch ：" + e);
+                                                    Console.WriteLine("Invoke Delegate OnConnected Catch Exception \n" + e);
                                                 }
                                             }
                                         }
@@ -150,6 +157,23 @@ namespace SMG.TcpSocket
                     });
                     acceptThread.IsBackground = true;
                     acceptThread.Start();
+
+                    if (onStart != null)
+                    {
+                        //执行所有接受委托事件
+                        foreach (var inv in onStart.GetInvocationList())
+                        {
+                            try
+                            {
+                                var _onStart = (StartEventHandler)inv;
+                                _onStart(this);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Invoke Delegate OnStart Catch Exception \n" + e);
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -182,15 +206,15 @@ namespace SMG.TcpSocket
                             try
                             {
                                 var _onStop = (StopEventHandler)inv;
-                                _onStop();
+                                _onStop(this);
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine("Invoke Delegate OnStop Catch ：" + e);
+                                Console.WriteLine("Invoke Delegate OnStop Catch Exception \n" + e);
                             }
                         }
                     }
-                    
+
                     workSocket.Close();
                 }
                 catch (Exception e)

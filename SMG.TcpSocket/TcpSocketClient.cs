@@ -104,7 +104,7 @@ namespace SMG.TcpSocket
                                     }
                                     catch (Exception e)
                                     {
-                                        Console.WriteLine("Invoke Delegate OnConnected Catch ：" + e);
+                                        Console.WriteLine("Invoke Delegate OnConnected Catch Exception \n" + e);
                                     }
                                 }
                             }
@@ -181,7 +181,7 @@ namespace SMG.TcpSocket
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine("Invoke Delegate OnRead Catch ：" + e);
+                                Console.WriteLine("Invoke Delegate OnRead Catch Exception \n" + e);
                             }
                         }
                     }
@@ -266,7 +266,7 @@ namespace SMG.TcpSocket
                                     }
                                     catch (Exception e)
                                     {
-                                        Console.WriteLine("Invoke Delegate OnSend Catch ：" + e);
+                                        Console.WriteLine("Invoke Delegate OnSend Catch Exception \n" + e);
                                     }
                                 }
                             }
@@ -306,7 +306,7 @@ namespace SMG.TcpSocket
                                 }
                                 catch (Exception e)
                                 {
-                                    Console.WriteLine("Invoke Delegate OnDisconnected Catch ：" + e);
+                                    Console.WriteLine("Invoke Delegate OnDisconnected Catch Exception \n" + e);
                                 }
                             }
                         }

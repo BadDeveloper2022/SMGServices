@@ -5,7 +5,9 @@ using System.Text;
 
 namespace SMG.TcpSocket
 {
-    public delegate void StopEventHandler();
+    public delegate void StartEventHandler(TcpSocketServer server);
+
+    public delegate void StopEventHandler(TcpSocketServer server);
 
     public delegate void ConnectedEventHandler(TcpSocketClient client);
 

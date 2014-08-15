@@ -17,28 +17,20 @@ namespace SMG.Cmd.SMG
 
         static void Bind(string ip, int port)
         {
-            if (SMGToSPServer == null || SMGToSPServer.Listened)
+            if (SMGToSPServer == null || !SMGToSPServer.Listened)
             {
                 SMGToSPServer = new TcpSocketServer(ip, port);
+                SMGToSPHandler handler = new SMGToSPHandler(spPool, mtPool);
+                handler.Register(SMGToSPServer);
                 SMGToSPServer.Listen(20);
-                if (SMGToSPServer.Listened)
-                {
-                    SMGToSPHandler handler = new SMGToSPHandler(spPool, mtPool);
-                    handler.Register(SMGToSPServer);
-                    Console.WriteLine(SMGToSPServer.BindIPAddress + "(SMGToSP)>网关服务已启动！");
-                }
             }
 
-            if (SMGToMTServer == null || SMGToMTServer.Listened)
+            if (SMGToMTServer == null || !SMGToMTServer.Listened)
             {
                 SMGToMTServer = new TcpSocketServer(ip, port + 1);
-                SMGToMTServer.Listen(20);
-                if (SMGToMTServer.Listened)
-                {
-                    SMGToMTHandler handler = new SMGToMTHandler(spPool, mtPool);
-                    handler.Register(SMGToMTServer);
-                    Console.WriteLine(SMGToMTServer.BindIPAddress + "(SMGToMT)>网关服务已启动！");
-                }
+                SMGToMTHandler handler = new SMGToMTHandler(spPool, mtPool);
+                handler.Register(SMGToMTServer);
+                SMGToMTServer.Listen(20);                
             }
         }
 

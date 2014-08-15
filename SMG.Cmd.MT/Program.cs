@@ -42,6 +42,8 @@ namespace SMG.Cmd.MT
             }
         }
 
+        public static string UserName { get; set; }
+
         static void Main(string[] args)
         {
             TcpSocketClient tcpClient = null;
@@ -49,6 +51,8 @@ namespace SMG.Cmd.MT
 
             Console.Write(">");
             string cmd = Console.ReadLine();
+
+            UserName = "8613020320822";
 
             while (cmd != "quit")
             {
@@ -82,6 +86,21 @@ namespace SMG.Cmd.MT
                             }
                         }
                     }
+                    else if (cmd.StartsWith("setnumber"))
+                    {
+                        try
+                        {
+                            if (tcpClient == null || !tcpClient.Connected)
+                            {
+                                string[] param = cmd.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                                UserName = param[1];
+                            } 
+                        }
+                        catch
+                        {
+                            Console.WriteLine("invalid 'setnumber' parameters ");
+                        }
+                    }
                     else
                     {
                         switch (cmd)
@@ -94,6 +113,9 @@ namespace SMG.Cmd.MT
                                 {
                                     tcpClient.Disconnect();
                                 }
+                                break;
+                            case "getnumber":
+                                Console.WriteLine(UserName);
                                 break;
                             default:
                                 Console.WriteLine(cmd);
