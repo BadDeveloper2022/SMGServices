@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Emulator.Phone
+namespace Emulator.Phone.Utils
 {
     public enum SMSTypes
     {

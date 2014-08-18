@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Emulator.Phone
+namespace Emulator.Phone.Utils
 {
     public class SMSHistory
     {
