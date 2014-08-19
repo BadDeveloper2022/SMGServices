@@ -9,6 +9,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Emulator.Phone
@@ -29,7 +30,7 @@ namespace Emulator.Phone
 
         void PrintLog(string log)
         {
-            rtbLog.AppendText(">" + log + "\n");
+            rtbLog.AppendText(DateTime.Now.ToString("HH:mm:ss") + " > " + log + "\n");
         }
 
         void BindGroup(string spNumber)
@@ -57,6 +58,21 @@ namespace Emulator.Phone
             rtbSession.AppendText(s.Content + "\n");
         }
 
+        void BindSession(string spNumber)
+        {
+            var session = SMSHistory.GetSession(spNumber);
+            if (session != null)
+            {
+                gpSession.Text = spNumber + " 会话";
+                this.rtbSession.Text = "";
+
+                foreach (var s in session)
+                {
+                    BindSession(s);
+                }
+            }
+        }
+
         #region 变量
 
         TcpSocketClient client;
@@ -81,7 +97,7 @@ namespace Emulator.Phone
 
                 cbbNumber.Enabled = false;
                 cbbSMGIP.Enabled = false;
-                cbbSMGPort.Enabled = false;
+                nudSMGPort.Enabled = false;
                 btnStart.Enabled = false;
                 btnStop.Enabled = true;
                 btnSend.Enabled = true;
@@ -98,7 +114,7 @@ namespace Emulator.Phone
             {
                 cbbNumber.Enabled = true;
                 cbbSMGIP.Enabled = true;
-                cbbSMGPort.Enabled = true;
+                nudSMGPort.Enabled = true;
                 btnStart.Enabled = true;
                 btnStop.Enabled = false;
                 btnSend.Enabled = false;
@@ -108,6 +124,7 @@ namespace Emulator.Phone
 
                 lbGroup.Items.Clear();
                 rtbContent.Text = "";
+                rtbSession.Text = "";
             });
         }
 
@@ -131,23 +148,28 @@ namespace Emulator.Phone
                             Type = SMSTypes.SEND
                         };
                         SMSHistory.Add(sms);
-
+                        //绑定会话组
                         BindGroup(deliver.SPNumber);
-
+                        //绑定会话
                         if (lbGroup.SelectedItem != null && lbGroup.SelectedItem.ToString() == cbbSPNumber.Text)
                         {
                             BindSession(sms);
                         }
+                        else
+                        {
+                            lbGroup.SelectedItem = deliver.SPNumber;
+                            BindSession(deliver.SPNumber);
+                        }
 
                         rtbContent.Text = "";
                         cbbSPNumber.Text = "";
-                        PrintLog(DateTime.Now.ToString("HH:mm:ss") + " 发送一条新消息给 " + sms.SPNumber);
+                        PrintLog("发送一条新消息给 " + sms.SPNumber);
                         MessageBox.Show(this, "发送成功！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    PrintLog("发送消息出现错误： " + e.Message);
                 }
             });
         }
@@ -163,8 +185,13 @@ namespace Emulator.Phone
                     switch (cmd.Command)
                     {
                         case Commands.Bind_Resp:
-                            var bind_resp = new Deliver_Resp(buffers);
-                            Console.WriteLine(bind_resp.ToString());
+                            var bind_resp = new Bind_Resp(buffers);
+                            if (bind_resp.Result != CommandError.Success)
+                            {
+                                PrintLog("绑定验证失败：" + CommandError.GetMessage(bind_resp.Result));
+                                Thread.Sleep(1000);
+                                client.Disconnect();
+                            }
                             break;
                         case Commands.Deliver:
                             var deliver = new Deliver(buffers);
@@ -180,16 +207,31 @@ namespace Emulator.Phone
                             SMSHistory.Add(sms);
                             //绑定会话组
                             BindGroup(deliver.SPNumber);
+                            //绑定会话
                             if (lbGroup.SelectedItem != null && lbGroup.SelectedItem.ToString() == sms.SPNumber)
                             {
                                 BindSession(sms);
                             }
+                            else
+                            {
+                                lbGroup.SelectedItem = deliver.SPNumber;
+                                BindSession(deliver.SPNumber);
+                            }
                             //新消息提醒
-                            PrintLog(DateTime.Now.ToString("HH:mm:ss") + " 收到一条 " + sms.SPNumber + " 发来的新消息！");
+                            PrintLog("收到一条 " + sms.SPNumber + " 发来的新消息！");
+                            //发送响应
+                            client.Send(new Deliver_Resp
+                            {
+                                SequenceNumber = deliver.SequenceNumber,
+                                Result = CommandError.Success
+                            }.GetBytes());
                             break;
                         case Commands.Deliver_Resp:
                             var deliver_resp = new Deliver_Resp(buffers);
-                            Console.WriteLine(deliver_resp.ToString());
+                            if (deliver_resp.Result != CommandError.Success)
+                            {
+                                PrintLog("传送消息失败：" + CommandError.GetMessage(deliver_resp.Result));
+                            }
                             break;
                         default:
                             break;
@@ -197,7 +239,7 @@ namespace Emulator.Phone
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    PrintLog("读取消息出现错误： " + e.Message);
                 }
             });
         }
@@ -215,14 +257,14 @@ namespace Emulator.Phone
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            if (cbbNumber.Text == "" || cbbSMGIP.Text == "" || cbbSMGPort.Text == "")
+            if (cbbNumber.Text == "" || cbbSMGIP.Text == "")
             {
                 return;
             }
 
             if (client == null || !client.Connected)
             {
-                client = new TcpSocketClient(cbbSMGIP.Text, int.Parse(cbbSMGPort.Text));
+                client = new TcpSocketClient(cbbSMGIP.Text, (int)nudSMGPort.Value);
                 client.OnConnected += OnConnected;
                 client.OnDisconnected += OnDisconnected;
                 client.OnRead += OnRead;
@@ -266,18 +308,7 @@ namespace Emulator.Phone
         {
             if (lbGroup.SelectedIndex < 0) return;
 
-            string spNumber = lbGroup.SelectedItem.ToString();
-            var session = SMSHistory.GetSession(spNumber);
-            if (session != null)
-            {
-                gpSession.Text = spNumber + " 会话";
-                this.rtbSession.Text = "";
-
-                foreach (var s in session)
-                {
-                    BindSession(s);
-                }
-            }
+            BindSession(lbGroup.SelectedItem.ToString());
         }
 
     }

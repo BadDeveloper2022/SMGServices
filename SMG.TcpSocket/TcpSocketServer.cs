@@ -64,6 +64,58 @@ namespace SMG.TcpSocket
 
         #endregion
 
+        #region request events
+
+        private void RequestConnectedEvent(TcpSocketClient client)
+        {
+            if (onConnected != null)
+            {
+                foreach (var inv in onConnected.GetInvocationList())
+                {
+                    var invoke = (ConnectedEventHandler)inv;
+                    invoke(client);
+                }
+            }
+        }
+
+        private void RequestStartEvent()
+        {
+            if (onStart != null)
+            {
+                foreach (var inv in onStart.GetInvocationList())
+                {
+                    var invoke = (StartEventHandler)inv;
+                    invoke(this);
+                }
+            }
+        }
+
+        private void RequestStopEvent()
+        {
+            if (onStop != null)
+            {
+                foreach (var inv in onStop.GetInvocationList())
+                {
+                    var invoke = (StopEventHandler)inv;
+                    invoke(this);
+                }
+            }
+        }
+
+        private void RequestExceptionEvent(Exception e)
+        {
+            if (onException != null)
+            {
+                foreach (var inv in onException.GetInvocationList())
+                {
+                    var invoke = (ExceptionEventHandler)inv;
+                    invoke(e);
+                }
+            }
+        }
+
+        #endregion
+
         private string ip;
         private int port;
         private Socket workSocket;
@@ -129,29 +181,16 @@ namespace SMG.TcpSocket
                                         tcpClient.OnRead += onRead;
                                         tcpClient.OnSend += onSend;
                                         tcpClient.OnDisconnected += onDisconnected;
+                                        tcpClient.OnException += onException;
                                         tcpClient.Start();
 
-                                        if (onConnected != null)
-                                        {
-                                            //执行所有接受委托事件
-                                            foreach (var inv in onConnected.GetInvocationList())
-                                            {
-                                                try
-                                                {
-                                                    var _onConnected = (ConnectedEventHandler)inv;
-                                                    _onConnected(tcpClient);
-                                                }
-                                                catch (Exception e)
-                                                {
-                                                    Console.WriteLine("Invoke Delegate OnConnected Catch Exception \n" + e);
-                                                }
-                                            }
-                                        }
+                                        //调用委托事件
+                                        RequestConnectedEvent(tcpClient);
                                     }
                                 }
-                                catch (SocketException e)
+                                catch (Exception e)
                                 {
-                                    onException(e);
+                                    RequestExceptionEvent(e);
                                 }
                                 finally
                                 {
@@ -164,29 +203,14 @@ namespace SMG.TcpSocket
                     });
                     acceptThread.IsBackground = true;
                     acceptThread.Start();
-
-                    if (onStart != null)
-                    {
-                        //执行所有接受委托事件
-                        foreach (var inv in onStart.GetInvocationList())
-                        {
-                            try
-                            {
-                                var _onStart = (StartEventHandler)inv;
-                                _onStart(this);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine("Invoke Delegate OnStart Catch Exception \n" + e);
-                            }
-                        }
-                    }
+                    //调用委托事件
+                    RequestStartEvent();
                 }
             }
             catch (Exception e)
             {
                 Listened = false;
-                onException(e);
+                RequestExceptionEvent(e);
             }
         }
 
@@ -198,35 +222,21 @@ namespace SMG.TcpSocket
             {
                 try
                 {
-                    Listened = false;
-
                     if (acceptThread != null && acceptThread.IsAlive)
                     {
                         acceptThread.Abort();
                     }
-
-                    if (onStop != null)
-                    {
-                        //执行所有接受委托事件
-                        foreach (var inv in onStop.GetInvocationList())
-                        {
-                            try
-                            {
-                                var _onStop = (StopEventHandler)inv;
-                                _onStop(this);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine("Invoke Delegate OnStop Catch Exception \n" + e);
-                            }
-                        }
-                    }
-
+                    //调用委托事件
+                    RequestStopEvent();
                     workSocket.Close();
                 }
                 catch (Exception e)
                 {
-                    onException(e);
+                    RequestExceptionEvent(e);
+                }
+                finally
+                {
+                    Listened = false;
                 }
             }
 

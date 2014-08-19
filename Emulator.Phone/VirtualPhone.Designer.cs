@@ -38,7 +38,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.lbStatus = new System.Windows.Forms.Label();
             this.btnStop = new System.Windows.Forms.Button();
-            this.cbbSMGPort = new System.Windows.Forms.ComboBox();
             this.btnStart = new System.Windows.Forms.Button();
             this.cbbSMGIP = new System.Windows.Forms.ComboBox();
             this.cbbNumber = new System.Windows.Forms.ComboBox();
@@ -46,24 +45,26 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.tabSMS = new System.Windows.Forms.TabPage();
-            this.gpSession = new System.Windows.Forms.GroupBox();
-            this.rtbSession = new System.Windows.Forms.RichTextBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.lbGroup = new System.Windows.Forms.ListBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.rtbContent = new System.Windows.Forms.RichTextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.cbbSPNumber = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.gpSession = new System.Windows.Forms.GroupBox();
+            this.rtbSession = new System.Windows.Forms.RichTextBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.lbGroup = new System.Windows.Forms.ListBox();
+            this.nudSMGPort = new System.Windows.Forms.NumericUpDown();
             this.tabControl1.SuspendLayout();
             this.tabStart.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.tabSMS.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.gpSession.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSMGPort)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -109,12 +110,12 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.nudSMGPort);
             this.groupBox3.Controls.Add(this.lbAddress);
             this.groupBox3.Controls.Add(this.label4);
             this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Controls.Add(this.lbStatus);
             this.groupBox3.Controls.Add(this.btnStop);
-            this.groupBox3.Controls.Add(this.cbbSMGPort);
             this.groupBox3.Controls.Add(this.btnStart);
             this.groupBox3.Controls.Add(this.cbbSMGIP);
             this.groupBox3.Controls.Add(this.cbbNumber);
@@ -180,17 +181,6 @@
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
-            // cbbSMGPort
-            // 
-            this.cbbSMGPort.Font = new System.Drawing.Font("宋体", 9.5F);
-            this.cbbSMGPort.FormattingEnabled = true;
-            this.cbbSMGPort.Items.AddRange(new object[] {
-            "8802"});
-            this.cbbSMGPort.Location = new System.Drawing.Point(98, 110);
-            this.cbbSMGPort.Name = "cbbSMGPort";
-            this.cbbSMGPort.Size = new System.Drawing.Size(90, 21);
-            this.cbbSMGPort.TabIndex = 5;
-            // 
             // btnStart
             // 
             this.btnStart.Font = new System.Drawing.Font("宋体", 9.5F);
@@ -212,6 +202,7 @@
             this.cbbSMGIP.Name = "cbbSMGIP";
             this.cbbSMGIP.Size = new System.Drawing.Size(160, 21);
             this.cbbSMGIP.TabIndex = 4;
+            this.cbbSMGIP.Text = "127.0.0.1";
             // 
             // cbbNumber
             // 
@@ -265,6 +256,69 @@
             this.tabSMS.Text = "短消息";
             this.tabSMS.UseVisualStyleBackColor = true;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.btnSend);
+            this.groupBox2.Controls.Add(this.rtbContent);
+            this.groupBox2.Controls.Add(this.label6);
+            this.groupBox2.Controls.Add(this.cbbSPNumber);
+            this.groupBox2.Controls.Add(this.label7);
+            this.groupBox2.Location = new System.Drawing.Point(173, 6);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(379, 139);
+            this.groupBox2.TabIndex = 12;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "新消息";
+            // 
+            // btnSend
+            // 
+            this.btnSend.Enabled = false;
+            this.btnSend.Font = new System.Drawing.Font("宋体", 9.5F);
+            this.btnSend.Location = new System.Drawing.Point(288, 15);
+            this.btnSend.Name = "btnSend";
+            this.btnSend.Size = new System.Drawing.Size(75, 30);
+            this.btnSend.TabIndex = 4;
+            this.btnSend.Text = "发送";
+            this.btnSend.UseVisualStyleBackColor = true;
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            // 
+            // rtbContent
+            // 
+            this.rtbContent.Location = new System.Drawing.Point(62, 63);
+            this.rtbContent.Name = "rtbContent";
+            this.rtbContent.Size = new System.Drawing.Size(302, 60);
+            this.rtbContent.TabIndex = 3;
+            this.rtbContent.Text = "";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(19, 83);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(41, 12);
+            this.label6.TabIndex = 2;
+            this.label6.Text = "内容：";
+            // 
+            // cbbSPNumber
+            // 
+            this.cbbSPNumber.Font = new System.Drawing.Font("宋体", 9.5F);
+            this.cbbSPNumber.FormattingEnabled = true;
+            this.cbbSPNumber.Items.AddRange(new object[] {
+            "106559284130016"});
+            this.cbbSPNumber.Location = new System.Drawing.Point(62, 21);
+            this.cbbSPNumber.Name = "cbbSPNumber";
+            this.cbbSPNumber.Size = new System.Drawing.Size(180, 21);
+            this.cbbSPNumber.TabIndex = 1;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(7, 25);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(53, 12);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "SP号码：";
+            // 
             // gpSession
             // 
             this.gpSession.Controls.Add(this.rtbSession);
@@ -305,67 +359,28 @@
             this.lbGroup.TabIndex = 9;
             this.lbGroup.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lbGroup_MouseDoubleClick);
             // 
-            // groupBox2
+            // nudSMGPort
             // 
-            this.groupBox2.Controls.Add(this.btnSend);
-            this.groupBox2.Controls.Add(this.rtbContent);
-            this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Controls.Add(this.cbbSPNumber);
-            this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Location = new System.Drawing.Point(179, 6);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(373, 139);
-            this.groupBox2.TabIndex = 12;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "新消息";
-            // 
-            // btnSend
-            // 
-            this.btnSend.Font = new System.Drawing.Font("宋体", 9.5F);
-            this.btnSend.Location = new System.Drawing.Point(280, 15);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(75, 30);
-            this.btnSend.TabIndex = 4;
-            this.btnSend.Text = "发送";
-            this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
-            // 
-            // rtbContent
-            // 
-            this.rtbContent.Location = new System.Drawing.Point(62, 63);
-            this.rtbContent.Name = "rtbContent";
-            this.rtbContent.Size = new System.Drawing.Size(293, 60);
-            this.rtbContent.TabIndex = 3;
-            this.rtbContent.Text = "";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(19, 83);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(41, 12);
-            this.label6.TabIndex = 2;
-            this.label6.Text = "内容：";
-            // 
-            // cbbSPNumber
-            // 
-            this.cbbSPNumber.Font = new System.Drawing.Font("宋体", 9.5F);
-            this.cbbSPNumber.FormattingEnabled = true;
-            this.cbbSPNumber.Items.AddRange(new object[] {
-            "106559284130016"});
-            this.cbbSPNumber.Location = new System.Drawing.Point(62, 21);
-            this.cbbSPNumber.Name = "cbbSPNumber";
-            this.cbbSPNumber.Size = new System.Drawing.Size(180, 21);
-            this.cbbSPNumber.TabIndex = 1;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(7, 25);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(53, 12);
-            this.label7.TabIndex = 0;
-            this.label7.Text = "SP号码：";
+            this.nudSMGPort.Font = new System.Drawing.Font("宋体", 9.5F);
+            this.nudSMGPort.Location = new System.Drawing.Point(99, 109);
+            this.nudSMGPort.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.nudSMGPort.Minimum = new decimal(new int[] {
+            8000,
+            0,
+            0,
+            0});
+            this.nudSMGPort.Name = "nudSMGPort";
+            this.nudSMGPort.Size = new System.Drawing.Size(60, 22);
+            this.nudSMGPort.TabIndex = 12;
+            this.nudSMGPort.Value = new decimal(new int[] {
+            8802,
+            0,
+            0,
+            0});
             // 
             // VirtualPhone
             // 
@@ -373,6 +388,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 361);
             this.Controls.Add(this.tabControl1);
+            this.MaximizeBox = false;
             this.Name = "VirtualPhone";
             this.Text = "短消息模拟器";
             this.tabControl1.ResumeLayout(false);
@@ -381,10 +397,11 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.tabSMS.ResumeLayout(false);
-            this.gpSession.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.gpSession.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nudSMGPort)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -398,7 +415,6 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.Button btnStart;
-        private System.Windows.Forms.ComboBox cbbSMGPort;
         private System.Windows.Forms.ComboBox cbbSMGIP;
         private System.Windows.Forms.ComboBox cbbNumber;
         private System.Windows.Forms.Label label3;
@@ -419,6 +435,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cbbSPNumber;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.NumericUpDown nudSMGPort;
 
 
     }
