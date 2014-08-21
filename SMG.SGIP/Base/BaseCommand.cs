@@ -39,8 +39,12 @@ namespace SMG.SGIP.Base
                 this.NodeNumber = ToUInt32(value, 0, 4);
                 this.DateTime = ToUInt32(value, 4, 4);
                 this.OrdinalNumber = ToUInt32(value, 8, 4);
+
+                this.SequenceNumberString = NodeNumber + "" + DateTime + "" + OrdinalNumber;
             }
         }
+
+        public string SequenceNumberString { get; private set; }
 
         /// <summary>
         /// 节点号 4字节
@@ -100,6 +104,8 @@ namespace SMG.SGIP.Base
                 this.NodeNumber = ToUInt32(this.SequenceNumber, 0, 4);
                 this.DateTime = ToUInt32(this.SequenceNumber, 4, 4);
                 this.OrdinalNumber = ToUInt32(this.SequenceNumber, 8, 4);
+
+                this.SequenceNumberString = NodeNumber + "" + DateTime + "" + OrdinalNumber;
             }
             catch
             {

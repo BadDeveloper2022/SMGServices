@@ -1,9 +1,12 @@
 ﻿using Emulator.SMG.Utils;
 using SMG.SGIP.Base;
+using SMG.Sqlite;
+using SMG.Sqlite.Storage;
 using SMG.TcpSocket;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -16,14 +19,15 @@ namespace Emulator.SMG
     {
         TcpSocketServer tcpSPServer;
         TcpSocketServer tcpSMSCServer;
-        
+
         public VirtualGetway()
         {
             InitializeComponent();
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
 
-            Sequence.SetNodeNumber(1380591);
+            uint nodeNumber = uint.Parse(ConfigurationManager.AppSettings["NodeNumber"]);
+            Sequence.SetNodeNumber(nodeNumber);
         }
 
         private void btnSPStart_Click(object sender, EventArgs e)

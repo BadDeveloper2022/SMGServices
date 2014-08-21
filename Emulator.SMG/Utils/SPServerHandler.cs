@@ -1,10 +1,16 @@
 ﻿using SMG.SGIP.Base;
 using SMG.SGIP.Command;
+using SMG.Sqlite;
+using SMG.Sqlite.Models;
+using SMG.Sqlite.Storage;
 using SMG.TcpSocket;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Timers;
 using System.Windows.Forms;
 
 namespace Emulator.SMG.Utils
@@ -16,6 +22,9 @@ namespace Emulator.SMG.Utils
         TcpSocketServer tcpServer;
         List<SPClient> spClientPool;
         static SPServerHandler handler;
+        ReaderWriterLockSlim locker;
+        Queue<Deliver> deliverQueue;
+        System.Timers.Timer queueTimer;
 
         #endregion
 
@@ -37,22 +46,91 @@ namespace Emulator.SMG.Utils
             handler = new SPServerHandler(form, tcpServer);
         }
 
-        public static void Deliver(string spNumber, string userNumber, string content)
+        #region 转发队列定时器
+
+        void TimerHandler(object sender, ElapsedEventArgs e)
         {
             if (handler != null)
             {
-                var client = handler.spClientPool.FirstOrDefault(i => i.SPNumber == spNumber);
-                if (client != null)
+                handler.locker.EnterWriteLock();
+
+                if (handler.deliverQueue.Count > 0)
                 {
-                    client.Socket.Send(new Deliver
+                    var deliver = handler.deliverQueue.Dequeue();
+                    var client = handler.spClientPool.FirstOrDefault(i => i.SPNumber == deliver.SPNumber);
+                    //若SP客户端在线则转发，不在线则丢弃等待下次上线在转发
+                    if (client != null)
                     {
-                        SequenceNumber = Sequence.Next(),
-                        SPNumber = spNumber,
-                        UserNumber = userNumber,
+                        client.Socket.Send(deliver.GetBytes());
+                    }
+                }
+
+                handler.locker.ExitWriteLock();
+            }
+        }
+
+        #endregion
+
+        public static void DeliverToSP(Deliver d)
+        {
+            if (handler != null)
+            {
+                handler.locker.EnterWriteLock();
+
+                try
+                {
+                    var deliver = new Deliver
+                    {
+                        SequenceNumber = d.SequenceNumber,
+                        SPNumber = d.SPNumber,
+                        UserNumber = d.UserNumber,
                         MessageCoding = MessageCodes.GBK,
-                        MessageContent = content,
+                        MessageContent = d.MessageContent,
                         TP_pid = 0,
                         TP_udhi = 0
+                    };
+                    //添加到消息队列
+                    handler.deliverQueue.Enqueue(deliver);
+
+                    //插入转发消息到数据库
+                    var mDeliver = new MDeliver
+                    {
+                        SequenceNumber = deliver.SequenceNumberString,
+                        TargetSequenceNumber = deliver.SequenceNumber,
+                        SPNumber = d.SPNumber,
+                        UserNumber = d.UserNumber,
+                        Content = d.MessageContent,
+                        Created = DateTime.Now,
+                        Status = 0
+                    };
+                    StorageProvider<DeliverStorage>.GetStorage().Insert(mDeliver);
+                }
+                catch
+                {
+
+                }
+                finally
+                {
+                    handler.locker.ExitWriteLock();
+                }
+            }
+        }
+
+        public static void ReportToSP(MReport report)
+        {
+            if (handler != null)
+            {
+                var client = handler.spClientPool.FirstOrDefault(i => i.SPNumber == report.SPNumber);
+                //若SP客户端在线则转发，不在线则丢弃等待下次上线在转发
+                if (client != null)
+                {
+                    client.Socket.Send(new Report
+                    {
+                        SubmitSequenceNumber = report.TargetSubmitSequenceNumber,
+                        ReportType = (uint)report.ReportType,
+                        State = (uint)report.State,
+                        ErrorCode = (uint)report.ErrorCode,
+                        UserNumber = report.UserNumber
                     }.GetBytes());
                 }
             }
@@ -64,6 +142,11 @@ namespace Emulator.SMG.Utils
             this.tcpServer = tcpServer;
             this.spClientPool = new List<SPClient>();
             this.OnCreate();
+            this.locker = new ReaderWriterLockSlim();
+            this.deliverQueue = new Queue<Deliver>();
+            this.queueTimer = new System.Timers.Timer(1000);
+            this.queueTimer.Elapsed += TimerHandler;
+            this.queueTimer.Start();
 
             tcpServer.OnConnected += this.OnConnected;
             tcpServer.OnDisconnected += this.OnDisconnected;
@@ -142,6 +225,7 @@ namespace Emulator.SMG.Utils
                 spClientPool.Clear();
 
                 lbSPList.Items.Clear();
+                queueTimer.Stop();
                 PrintLog("停止SP网关服务成功！");
             });
         }
@@ -187,9 +271,25 @@ namespace Emulator.SMG.Utils
                                 client.Disconnect();
                             }
                             break;
+                        case Commands.Deliver:
+                            var deliver = new Deliver(buffers);
+                            //更新为已发送状态
+                            StorageProvider<DeliverStorage>.GetStorage().Update(cmd.SequenceNumberString, 1);
+                            break;
+                        case Commands.Report:
+                            var mReport1 = StorageProvider<ReportStorage>.GetStorage().Get(cmd.SequenceNumberString);
+                            if (mReport1 != null)
+                            {
+                                mReport1.Status = 1;
+
+                                StorageProvider<ReportStorage>.GetStorage().Update(mReport1);
+                            }
+                            break;
                         default:
                             break;
                     }
+
+                    PrintLog("发送命令给 " + client.LocalIPAddress + " ：" + cmd.Command);
                 }
                 catch (Exception e)
                 {
@@ -239,6 +339,51 @@ namespace Emulator.SMG.Utils
                         SPNumber = bind.LoginName,
                         Socket = client
                     });
+
+                    //开启线程读取上次未发送的消息
+                    ThreadPool.QueueUserWorkItem((obj) =>
+                    {
+                        var dao = StorageProvider<DeliverStorage>.GetStorage();
+                        var list = dao.GetList(bind.LoginName);
+
+                        if (list.Count() > 0)
+                        {
+                            foreach (var deliver in list)
+                            {
+                                client.Send(new Deliver
+                                {
+                                    SequenceNumber = deliver.TargetSequenceNumber,
+                                    SPNumber = deliver.SPNumber,
+                                    UserNumber = deliver.UserNumber,
+                                    TP_pid = 0,
+                                    TP_udhi = 0,
+                                    MessageCoding = MessageCodes.GBK,
+                                    MessageContent = deliver.Content
+                                }.GetBytes());
+                            }
+                        }
+                    });
+                    //开线程读取上次未发送的报告
+                    ThreadPool.QueueUserWorkItem((obj) =>
+                    {
+                        var dao = StorageProvider<ReportStorage>.GetStorage();
+                        var list = dao.GetList(bind.LoginName);
+
+                        if (list.Count() > 0)
+                        {
+                            foreach (var report in list)
+                            {
+                                client.Send(new Report
+                                {
+                                    SubmitSequenceNumber = report.TargetSubmitSequenceNumber,
+                                    ReportType = (uint)report.ReportType,
+                                    State = (uint)report.State,
+                                    ErrorCode = (uint)report.ErrorCode,
+                                    UserNumber = report.UserNumber
+                                }.GetBytes());
+                            }
+                        }
+                    });
                 }
             }
 
@@ -265,12 +410,11 @@ namespace Emulator.SMG.Utils
 
             //todo message Verify
             client.Send(resp.GetBytes());
-            //转发给手机客户端
-            SMSCServerHandler.Deliver(submit.UserNumber, submit.SPNumber, submit.MessageContent);
+            //转发给SMSC服务处理
+            SMSCServerHandler.DeliverToPhone(submit);
         }
 
         #endregion
-
 
         void OnRead(TcpSocketClient client, byte[] buffers)
         {

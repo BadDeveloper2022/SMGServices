@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulator.Phone", "Emulator.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulator.SMG", "Emulator.SMG\Emulator.SMG.csproj", "{F6A2BA77-A532-4C6F-9594-5BEC91CAF2DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMG.Sqlite", "SMG.Sqlite\SMG.Sqlite.csproj", "{1A149895-41C3-4719-A717-23D4701BFFA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F6A2BA77-A532-4C6F-9594-5BEC91CAF2DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6A2BA77-A532-4C6F-9594-5BEC91CAF2DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6A2BA77-A532-4C6F-9594-5BEC91CAF2DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A149895-41C3-4719-A717-23D4701BFFA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A149895-41C3-4719-A717-23D4701BFFA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A149895-41C3-4719-A717-23D4701BFFA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A149895-41C3-4719-A717-23D4701BFFA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

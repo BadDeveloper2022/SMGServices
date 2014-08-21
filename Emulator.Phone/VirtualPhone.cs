@@ -125,6 +125,8 @@ namespace Emulator.Phone
                 lbGroup.Items.Clear();
                 rtbContent.Text = "";
                 rtbSession.Text = "";
+
+                PrintLog("已从服务器断开连接！");
             });
         }
 
@@ -236,6 +238,8 @@ namespace Emulator.Phone
                         default:
                             break;
                     }
+
+                    PrintLog("接收到命令：" + cmd.Command);
                 }
                 catch (Exception e)
                 {

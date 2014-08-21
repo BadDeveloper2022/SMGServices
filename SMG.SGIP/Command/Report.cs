@@ -13,7 +13,7 @@ namespace SMG.SGIP.Command
         /// <summary>
         /// 该命令所涉及的Submit或deliver命令的序列号  12字节
         /// </summary>
-        public uint SubmitSequenceNumber { get; set; }
+        public byte[] SubmitSequenceNumber { get; set; }
 
         /// <summary>
         /// Report命令类型 1字节
@@ -55,12 +55,13 @@ namespace SMG.SGIP.Command
             try
             {
                 int offset = HEADER_LENGTH;
-                this.SubmitSequenceNumber = ToUInt32(bytes, offset, 12);
+                this.SubmitSequenceNumber = new byte[12];
+                Array.Copy(bytes, offset, this.SubmitSequenceNumber, 0, 12);
                 offset += 12;
                 this.ReportType = bytes[offset];
                 offset++;
-                this.UserNumber = GetString(bytes, offset, 12);
-                offset += 12;
+                this.UserNumber = GetString(bytes, offset, 21);
+                offset += 21;
                 this.State = bytes[offset];
                 offset++;
                 this.ErrorCode = bytes[offset];
@@ -82,8 +83,7 @@ namespace SMG.SGIP.Command
                 base.Headers.CopyTo(bytes, 0);
                 //消息体
                 int offset = HEADER_LENGTH;
-                byte[] ssnbts = GetBytes(SubmitSequenceNumber);
-                Array.Copy(ssnbts, 0, bytes, offset, ssnbts.Length);
+                Array.Copy(SubmitSequenceNumber, 0, bytes, offset, 12);
                 offset += 12;
                 bytes[offset] = (byte)ReportType;
                 offset++;

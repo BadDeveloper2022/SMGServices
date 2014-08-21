@@ -33,6 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -44,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utils\MessageCenter.cs" />
     <Compile Include="Utils\MTClient.cs" />
     <Compile Include="Utils\SMSCServerHandler.cs" />
     <Compile Include="Utils\SPServerHandler.cs" />
@@ -68,6 +70,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="App.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -82,6 +85,10 @@
     <ProjectReference Include="..\SMG.SGIP\SMG.SGIP.csproj">
       <Project>{d9016ad9-4006-4345-8ee7-044e9c0da408}</Project>
       <Name>SMG.SGIP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SMG.Sqlite\SMG.Sqlite.csproj">
+      <Project>{1a149895-41c3-4719-a717-23d4701bffa4}</Project>
+      <Name>SMG.Sqlite</Name>
     </ProjectReference>
     <ProjectReference Include="..\SMG.TcpSocket\SMG.TcpSocket.csproj">
       <Project>{a66a5f90-3f33-4327-9141-79fdac108c74}</Project>

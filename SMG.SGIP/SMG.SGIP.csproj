@@ -47,6 +47,7 @@
     <Compile Include="Base\LoginTypes.cs" />
     <Compile Include="Base\MessageCodes.cs" />
     <Compile Include="Base\ReportStatus.cs" />
+    <Compile Include="Base\ReportTypes.cs" />
     <Compile Include="Base\Sequence.cs" />
     <Compile Include="Command\Bind.cs" />
     <Compile Include="Command\Bind_Resp.cs" />
