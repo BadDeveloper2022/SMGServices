@@ -289,7 +289,7 @@ namespace Emulator.SMG.Utils
                             break;
                     }
 
-                    PrintLog("发送命令给 " + client.LocalIPAddress + " ：" + cmd.Command);
+                    PrintLog("发送命令 " + Commands.GetString(cmd.Command) + " 给 " + client.LocalIPAddress);
                 }
                 catch (Exception e)
                 {
@@ -339,55 +339,59 @@ namespace Emulator.SMG.Utils
                         SPNumber = bind.LoginName,
                         Socket = client
                     });
-
-                    //开启线程读取上次未发送的消息
-                    ThreadPool.QueueUserWorkItem((obj) =>
-                    {
-                        var dao = StorageProvider<DeliverStorage>.GetStorage();
-                        var list = dao.GetList(bind.LoginName);
-
-                        if (list.Count() > 0)
-                        {
-                            foreach (var deliver in list)
-                            {
-                                client.Send(new Deliver
-                                {
-                                    SequenceNumber = deliver.TargetSequenceNumber,
-                                    SPNumber = deliver.SPNumber,
-                                    UserNumber = deliver.UserNumber,
-                                    TP_pid = 0,
-                                    TP_udhi = 0,
-                                    MessageCoding = MessageCodes.GBK,
-                                    MessageContent = deliver.Content
-                                }.GetBytes());
-                            }
-                        }
-                    });
-                    //开线程读取上次未发送的报告
-                    ThreadPool.QueueUserWorkItem((obj) =>
-                    {
-                        var dao = StorageProvider<ReportStorage>.GetStorage();
-                        var list = dao.GetList(bind.LoginName);
-
-                        if (list.Count() > 0)
-                        {
-                            foreach (var report in list)
-                            {
-                                client.Send(new Report
-                                {
-                                    SubmitSequenceNumber = report.TargetSubmitSequenceNumber,
-                                    ReportType = (uint)report.ReportType,
-                                    State = (uint)report.State,
-                                    ErrorCode = (uint)report.ErrorCode,
-                                    UserNumber = report.UserNumber
-                                }.GetBytes());
-                            }
-                        }
-                    });
                 }
             }
 
             client.Send(resp.GetBytes());
+
+            if (resp.Result == CommandError.Success)
+            {
+
+                //开启线程读取上次未发送的消息
+                ThreadPool.QueueUserWorkItem((obj) =>
+                {
+                    var dao = StorageProvider<DeliverStorage>.GetStorage();
+                    var list = dao.GetList(bind.LoginName);
+
+                    if (list.Count() > 0)
+                    {
+                        foreach (var deliver in list)
+                        {
+                            client.Send(new Deliver
+                            {
+                                SequenceNumber = deliver.TargetSequenceNumber,
+                                SPNumber = deliver.SPNumber,
+                                UserNumber = deliver.UserNumber,
+                                TP_pid = 0,
+                                TP_udhi = 0,
+                                MessageCoding = MessageCodes.GBK,
+                                MessageContent = deliver.Content
+                            }.GetBytes());
+                        }
+                    }
+                });
+                //开线程读取上次未发送的报告
+                ThreadPool.QueueUserWorkItem((obj) =>
+                {
+                    var dao = StorageProvider<ReportStorage>.GetStorage();
+                    var list = dao.GetList(bind.LoginName);
+
+                    if (list.Count() > 0)
+                    {
+                        foreach (var report in list)
+                        {
+                            client.Send(new Report
+                            {
+                                SubmitSequenceNumber = report.TargetSubmitSequenceNumber,
+                                ReportType = (uint)report.ReportType,
+                                State = (uint)report.State,
+                                ErrorCode = (uint)report.ErrorCode,
+                                UserNumber = report.UserNumber
+                            }.GetBytes());
+                        }
+                    }
+                });
+            }
         }
 
         void UnBindResp(TcpSocketClient client, UnBind ubind)
@@ -439,7 +443,7 @@ namespace Emulator.SMG.Utils
                             PrintLog("收到 " + submit.SPNumber + " 发送送给 " + submit.UserNumber + " 的消息： " + submit.MessageContent);
                             break;
                         default:
-                            PrintLog("读取 " + client.LocalIPAddress + " 发送的命令：" + cmd.Command);
+                            PrintLog("读取 " + client.LocalIPAddress + " 发送的命令：" + Commands.GetString(cmd.Command));
                             break;
                     }
                 }

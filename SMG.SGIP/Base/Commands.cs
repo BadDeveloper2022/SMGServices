@@ -23,5 +23,63 @@ namespace SMG.SGIP.Base
         public const uint UserRpt_Resp = 0x80000011;
         public const uint Trace = 0x1000;
         public const uint Trace_Resp = 0x80001000;
+
+
+        public static string GetString(uint cmd)
+        {
+            string desc = "unkown";
+            switch (cmd)
+            {
+                case Bind:
+                    desc = "Bind";
+                    break;
+                case Bind_Resp:
+                    desc = "Bind_Resp";
+                    break;
+                case UnBind_Resp:
+                    desc = "UnBind_Resp";
+                    break;
+                case Submit:
+                    desc = "Submit";
+                    break;
+                case Submit_Resp:
+                    desc = "Submit_Resp";
+                    break;
+                case Deliver:
+                    desc = "Deliver";
+                    break;
+                case Deliver_Resp:
+                    desc = "Deliver_Resp";
+                    break;
+                case Report:
+                    desc = "Report";
+                    break;
+                case Report_Resp:
+                    desc = "Report_Resp";
+                    break;
+                case CheckUser:
+                    desc = "CheckUser";
+                    break;
+                case CheckUser_Resp:
+                    desc = "CheckUser_Resp";
+                    break;
+                case UserRpt:
+                    desc = "UserRpt";
+                    break;
+                case UserRpt_Resp:
+                    desc = "UserRpt_Resp";
+                    break;
+                case Trace:
+                    desc = "Trace";
+                    break;
+                case Trace_Resp:
+                    desc = "Trace_Resp";
+                    break;
+                default:
+                    break;
+            }
+
+            return desc;
+        }
     }
 }

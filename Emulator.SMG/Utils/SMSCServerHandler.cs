@@ -282,6 +282,8 @@ namespace Emulator.SMG.Utils
                         default:
                             break;
                     }
+
+                    PrintLog("发送命令 " + Commands.GetString(cmd.Command) + " 给 " + client.LocalIPAddress);
                 }
                 catch (Exception e)
                 {
@@ -331,34 +333,37 @@ namespace Emulator.SMG.Utils
                         UserNumber = bind.LoginName,
                         Socket = client
                     });
-
-                    //开启线程读取上次未发送的消息
-                    ThreadPool.QueueUserWorkItem((obj) =>
-                    {
-                        var dao = StorageProvider<SubmitStorage>.GetStorage();
-                        var list = dao.GetList(bind.LoginName);
-
-                        if (list.Count() > 0)
-                        {
-                            foreach (var submit in list)
-                            {
-                                client.Send(new Deliver
-                                {
-                                    SequenceNumber = submit.TargetSequenceNumber,
-                                    SPNumber = submit.SPNumber,
-                                    UserNumber = submit.UserNumber,
-                                    TP_pid = 0,
-                                    TP_udhi = 0,
-                                    MessageCoding = MessageCodes.GBK,
-                                    MessageContent = submit.Content
-                                }.GetBytes());
-                            }
-                        }
-                    });
                 }
             }
 
             client.Send(resp.GetBytes());
+
+            if (resp.Result == CommandError.Success)
+            {
+                //开启线程读取上次未发送的消息
+                ThreadPool.QueueUserWorkItem((obj) =>
+                {
+                    var dao = StorageProvider<SubmitStorage>.GetStorage();
+                    var list = dao.GetList(bind.LoginName);
+
+                    if (list.Count() > 0)
+                    {
+                        foreach (var submit in list)
+                        {
+                            client.Send(new Deliver
+                            {
+                                SequenceNumber = submit.TargetSequenceNumber,
+                                SPNumber = submit.SPNumber,
+                                UserNumber = submit.UserNumber,
+                                TP_pid = 0,
+                                TP_udhi = 0,
+                                MessageCoding = MessageCodes.GBK,
+                                MessageContent = submit.Content
+                            }.GetBytes());
+                        }
+                    }
+                });
+            }
         }
 
         void UnBindResp(TcpSocketClient client, UnBind ubind)
@@ -409,11 +414,9 @@ namespace Emulator.SMG.Utils
                             PrintLog("收到 " + deliver.UserNumber + " 发送送给 " + deliver.SPNumber + " 的消息： " + deliver.MessageContent);
                             break;
                         default:
-                            PrintLog("读取 " + client.LocalIPAddress + " 发送的命令：" + cmd.Command);
+                            PrintLog("读取 " + client.LocalIPAddress + " 发送的命令：" + Commands.GetString(cmd.Command));
                             break;
                     }
-
-                    PrintLog("发送命令给 " + client.LocalIPAddress + " ：" + cmd.Command);
                 }
                 catch (Exception e)
                 {

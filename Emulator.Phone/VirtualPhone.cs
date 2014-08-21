@@ -168,6 +168,8 @@ namespace Emulator.Phone
                         PrintLog("发送一条新消息给 " + sms.SPNumber);
                         MessageBox.Show(this, "发送成功！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
+
+                    PrintLog("发送一条命令：" + Commands.GetString(cmd.Command));
                 }
                 catch (Exception e)
                 {
@@ -239,7 +241,7 @@ namespace Emulator.Phone
                             break;
                     }
 
-                    PrintLog("接收到命令：" + cmd.Command);
+                    PrintLog("接收到命令：" + Commands.GetString(cmd.Command));
                 }
                 catch (Exception e)
                 {
