@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Timers;
 
 namespace SMG.TcpSocket
 {
@@ -139,6 +140,8 @@ namespace SMG.TcpSocket
         private Socket workSocket;
         private Thread recvThread;
         private ManualResetEvent recvDone;
+        private System.Timers.Timer sendTimer;
+        private Queue<byte[]> sendQueue;
         private ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
         public string LocalIPAddress { get; private set; }
@@ -153,6 +156,7 @@ namespace SMG.TcpSocket
             this.port = port;
             this.buffer = new byte[TransferSet.BufferSize];
             recvDone = new ManualResetEvent(false);
+            sendQueue = new Queue<byte[]>();
         }
 
         public TcpSocketClient(Socket socket)
@@ -160,6 +164,7 @@ namespace SMG.TcpSocket
             this.workSocket = socket;
             this.buffer = new byte[TransferSet.BufferSize];
             recvDone = new ManualResetEvent(false);
+            sendQueue = new Queue<byte[]>();
             this.LocalIPAddress = socket.RemoteEndPoint.ToString();
             this.RemoteIPAddress = socket.LocalEndPoint.ToString();
             Connected = true;
@@ -260,6 +265,36 @@ namespace SMG.TcpSocket
             }
         }
 
+        private void BeginSend(byte[] data)
+        {
+            if (Connected)
+            {
+                try
+                {
+                    workSocket.BeginSend(data, 0, data.Length, SocketFlags.None, (ar) =>
+                    {
+                        try
+                        {
+                            SocketError socketError = SocketError.SocketError;
+                            int len = workSocket.EndSend(ar, out socketError);
+                            if (len < data.Length) throw new SocketException((int)socketError);
+
+                            //请求委托事件
+                            RequestSendEvent(data);
+                        }
+                        catch (Exception ex)
+                        {
+                            RequestExceptionEvent(ex);
+                        }
+                    }, null);
+                }
+                catch (Exception ex)
+                {
+                    RequestExceptionEvent(ex);
+                }
+            }
+        }
+
         public void Start()
         {
             if (Connected)
@@ -289,6 +324,29 @@ namespace SMG.TcpSocket
                     });
                     recvThread.IsBackground = true;
                     recvThread.Start();
+
+                    if (sendTimer != null)
+                    {
+                        sendTimer.Stop();
+                    }
+                    //每100毫秒发送一条消息，暂时用于解决粘包问题
+                    sendTimer = new System.Timers.Timer(100);
+                    sendTimer.Elapsed += (sender, e) =>
+                    {
+                        if (Connected)
+                        {
+                            locker.EnterWriteLock();
+
+                            if (sendQueue.Count > 0)
+                            {
+                                var data = sendQueue.Dequeue();
+                                BeginSend(data);
+                            }
+
+                            locker.ExitWriteLock();
+                        }
+                    };
+                    sendTimer.Start();
                 }
                 catch (Exception e)
                 {
@@ -299,31 +357,11 @@ namespace SMG.TcpSocket
 
         public void Send(byte[] data)
         {
-            try
+            if (Connected)
             {
-                if (Connected)
-                {
-                    workSocket.BeginSend(data, 0, data.Length, SocketFlags.None, (ar) =>
-                    {
-                        try
-                        {
-                            SocketError socketError = SocketError.SocketError;
-                            int len = workSocket.EndSend(ar, out socketError);
-                            if (len < data.Length) throw new SocketException((int)socketError);
-
-                            //请求委托事件
-                            RequestSendEvent(data);
-                        }
-                        catch (Exception e)
-                        {
-                            RequestExceptionEvent(e);
-                        }
-                    }, null);
-                }
-            }
-            catch (Exception e)
-            {
-                RequestExceptionEvent(e);
+                locker.EnterWriteLock();
+                sendQueue.Enqueue(data);
+                locker.ExitWriteLock();
             }
         }
 
@@ -344,6 +382,8 @@ namespace SMG.TcpSocket
 
                             try
                             {
+                                sendTimer.Stop();
+
                                 workSocket.EndDisconnect(ar);
                                 workSocket.Shutdown(SocketShutdown.Both);
                             }
