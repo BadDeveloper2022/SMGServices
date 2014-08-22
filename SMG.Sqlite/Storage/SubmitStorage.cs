@@ -49,6 +49,23 @@ namespace SMG.Sqlite.Storage
             return count;
         }
 
+        public MSubmit Get(string sequenceNumber)
+        {
+            MSubmit m = null;
+            string sql = @"SELECT * from Submit WHERE SequenceNumber = @SequenceNumber limit 0 , 1 ";
+
+            try
+            {
+                m = base.Query<MSubmit>(sql, new { SequenceNumber = sequenceNumber }).FirstOrDefault();
+            }
+            catch
+            {
+                throw;
+            }
+
+            return m;
+        }
+
         public IEnumerable<MSubmit> GetList(string userNumber)
         {
             IEnumerable<MSubmit> ls = null;

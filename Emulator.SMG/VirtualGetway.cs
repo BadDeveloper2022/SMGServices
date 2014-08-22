@@ -40,7 +40,8 @@ namespace Emulator.SMG
             if (tcpSPServer == null || !tcpSPServer.Listened)
             {
                 tcpSPServer = new TcpSocketServer(cbbSPIP.Text, (int)nudSPPort.Value);
-                SPServerHandler.Register(this, tcpSPServer);
+                var handler = new SPServerHandler(this, tcpSPServer);
+                MessageCenter.GetInstance().Register(handler);
                 tcpSPServer.Listen((int)nudSPPort.Value);
             }
         }
@@ -63,7 +64,8 @@ namespace Emulator.SMG
             if (tcpSMSCServer == null || !tcpSMSCServer.Listened)
             {
                 tcpSMSCServer = new TcpSocketServer(cbbSMSCIP.Text, (int)nudSMSCPort.Value);
-                SMSCServerHandler.Register(this, tcpSMSCServer);
+                var handler = new SMSCServerHandler(this, tcpSMSCServer);
+                MessageCenter.GetInstance().Register(handler);
                 tcpSMSCServer.Listen((int)nudSMSCCount.Value);
             }
         }
