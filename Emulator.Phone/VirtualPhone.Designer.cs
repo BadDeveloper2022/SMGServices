@@ -33,6 +33,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rtbLog = new System.Windows.Forms.RichTextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.nudSMGPort = new System.Windows.Forms.NumericUpDown();
             this.lbAddress = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -55,16 +56,15 @@
             this.rtbSession = new System.Windows.Forms.RichTextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.lbGroup = new System.Windows.Forms.ListBox();
-            this.nudSMGPort = new System.Windows.Forms.NumericUpDown();
             this.tabControl1.SuspendLayout();
             this.tabStart.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSMGPort)).BeginInit();
             this.tabSMS.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.gpSession.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudSMGPort)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -128,6 +128,29 @@
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "开始";
+            // 
+            // nudSMGPort
+            // 
+            this.nudSMGPort.Font = new System.Drawing.Font("宋体", 9.5F);
+            this.nudSMGPort.Location = new System.Drawing.Point(99, 109);
+            this.nudSMGPort.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.nudSMGPort.Minimum = new decimal(new int[] {
+            8000,
+            0,
+            0,
+            0});
+            this.nudSMGPort.Name = "nudSMGPort";
+            this.nudSMGPort.Size = new System.Drawing.Size(60, 22);
+            this.nudSMGPort.TabIndex = 12;
+            this.nudSMGPort.Value = new decimal(new int[] {
+            8802,
+            0,
+            0,
+            0});
             // 
             // lbAddress
             // 
@@ -210,7 +233,10 @@
             this.cbbNumber.FormattingEnabled = true;
             this.cbbNumber.Items.AddRange(new object[] {
             "8613020320822",
-            "8613020320830"});
+            "8613020320830",
+            "8613845454545",
+            "8613545677778",
+            "8618650335176"});
             this.cbbNumber.Location = new System.Drawing.Point(99, 28);
             this.cbbNumber.Name = "cbbNumber";
             this.cbbNumber.Size = new System.Drawing.Size(160, 21);
@@ -304,7 +330,11 @@
             this.cbbSPNumber.Font = new System.Drawing.Font("宋体", 9.5F);
             this.cbbSPNumber.FormattingEnabled = true;
             this.cbbSPNumber.Items.AddRange(new object[] {
-            "106559284130016"});
+            "106559284130016",
+            "106559284250108",
+            "106559213250218",
+            "106551114250008",
+            "106559423142508"});
             this.cbbSPNumber.Location = new System.Drawing.Point(62, 21);
             this.cbbSPNumber.Name = "cbbSPNumber";
             this.cbbSPNumber.Size = new System.Drawing.Size(180, 21);
@@ -359,29 +389,6 @@
             this.lbGroup.TabIndex = 9;
             this.lbGroup.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lbGroup_MouseDoubleClick);
             // 
-            // nudSMGPort
-            // 
-            this.nudSMGPort.Font = new System.Drawing.Font("宋体", 9.5F);
-            this.nudSMGPort.Location = new System.Drawing.Point(99, 109);
-            this.nudSMGPort.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.nudSMGPort.Minimum = new decimal(new int[] {
-            8000,
-            0,
-            0,
-            0});
-            this.nudSMGPort.Name = "nudSMGPort";
-            this.nudSMGPort.Size = new System.Drawing.Size(60, 22);
-            this.nudSMGPort.TabIndex = 12;
-            this.nudSMGPort.Value = new decimal(new int[] {
-            8802,
-            0,
-            0,
-            0});
-            // 
             // VirtualPhone
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -396,12 +403,12 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudSMGPort)).EndInit();
             this.tabSMS.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.gpSession.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.nudSMGPort)).EndInit();
             this.ResumeLayout(false);
 
         }
