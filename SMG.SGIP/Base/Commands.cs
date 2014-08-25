@@ -27,7 +27,7 @@ namespace SMG.SGIP.Base
 
         public static string GetString(uint cmd)
         {
-            string desc = "unkown";
+            string desc = "Unknown";
             switch (cmd)
             {
                 case Bind:
@@ -35,6 +35,9 @@ namespace SMG.SGIP.Base
                     break;
                 case Bind_Resp:
                     desc = "Bind_Resp";
+                    break;
+                case UnBind:
+                    desc = "UnBind";
                     break;
                 case UnBind_Resp:
                     desc = "UnBind_Resp";

@@ -241,7 +241,7 @@ namespace Emulator.Phone
                             break;
                     }
 
-                    PrintLog("接收到命令：" + Commands.GetString(cmd.Command));
+                    PrintLog("接收一条命令：" + Commands.GetString(cmd.Command));
                 }
                 catch (Exception e)
                 {

@@ -37,7 +37,7 @@ namespace Emulator.SMG.Utils
         System.Timers.Timer submitTimer;
         SMSCServerHandler smscHandler;
 
-        public void Register(SMSCServerHandler handler)
+        public void RegisterSMSC(SMSCServerHandler handler)
         {
             this.smscHandler = handler;
             if (submitTimer != null)
@@ -65,6 +65,23 @@ namespace Emulator.SMG.Utils
             };
 
             submitTimer.Start();
+        }
+
+        public void UnRegisterSMSC()
+        {
+            if (smscHandler != null)
+            {
+                try
+                {
+                    submitTimer.Stop();
+                    submitQueue.Clear();
+                    smscHandler = null;
+                }
+                catch
+                {                  
+                    throw;
+                }
+            }
         }
 
         public void Commit(Submit submit)
@@ -114,7 +131,6 @@ namespace Emulator.SMG.Utils
 
         #endregion
 
-
         #region 转发SP相关
 
         ReaderWriterLockSlim deliverLocker;
@@ -122,7 +138,7 @@ namespace Emulator.SMG.Utils
         System.Timers.Timer deliverTimer;
         SPServerHandler spHandler;
 
-        public void Register(SPServerHandler handler)
+        public void RegisterSP(SPServerHandler handler)
         {
             this.spHandler = handler;
 
@@ -150,6 +166,23 @@ namespace Emulator.SMG.Utils
                 deliverLocker.ExitWriteLock();
             };
             deliverTimer.Start();
+        }
+
+        public void UnRegisterSP()
+        {
+            if (spHandler != null)
+            {
+                try
+                {
+                    deliverTimer.Stop();
+                    deliverQueue.Clear();
+                    spHandler = null;
+                }
+                catch
+                {
+                    throw;
+                }
+            }
         }
 
         public void Commit(Deliver deliver)

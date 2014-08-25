@@ -136,6 +136,8 @@ namespace Emulator.SMG.Utils
                 }.GetBytes());
             }
 
+            MessageCenter.GetInstance().UnRegisterSP();
+
             ThreadCalls(() =>
             {
                 cbbSPIP.Enabled = true;
@@ -262,11 +264,11 @@ namespace Emulator.SMG.Utils
                             break;
                     }
 
-                    PrintLog("发送命令 " + Commands.GetString(cmd.Command) + " 给 " + client.LocalIPAddress);
+                    PrintLog("发送一条命令 \"" + Commands.GetString(cmd.Command) + "\" 给 \"" + client.LocalIPAddress + "\"");
                 }
                 catch (Exception e)
                 {
-                    PrintLog("发送消息给 " + client.LocalIPAddress + " 出现错误：" + e.Message);
+                    PrintLog("发送一条命令给 \"" + client.LocalIPAddress + "\" 出现错误：" + e.Message);
                 }
             });
         }
@@ -394,7 +396,7 @@ namespace Emulator.SMG.Utils
                         case Commands.Submit:
                             var submit = new Submit(buffers);
                             this.SubmitHandler(client, submit);
-                            PrintLog("收到 " + submit.SPNumber + " 发送送给 " + submit.UserNumber + " 的消息： " + submit.MessageContent);
+                            PrintLog("接收到 \"" + submit.SPNumber + "\" 发送送给 \"" + submit.UserNumber + "\" 的消息： " + submit.MessageContent);
                             break;
                         case Commands.Deliver_Resp:
                             this.DeliverRespHandler(client, new Deliver_Resp(buffers));
@@ -403,9 +405,10 @@ namespace Emulator.SMG.Utils
                             this.ReportRespHandler(client, new Report_Resp(buffers));
                             break;
                         default:
-                            PrintLog("读取 " + client.LocalIPAddress + " 发送的命令：" + Commands.GetString(cmd.Command));
                             break;
                     }
+
+                    PrintLog("接收到一条 \"" + client.LocalIPAddress + "\" 发送的命令：" + Commands.GetString(cmd.Command));
                 }
                 catch (Exception e)
                 {
@@ -419,7 +422,7 @@ namespace Emulator.SMG.Utils
                     }
                     else
                     {
-                        PrintLog("读取 " + client.LocalIPAddress + " 发送的消息出现错误：" + e.Message);
+                        PrintLog("接受 \"" + client.LocalIPAddress + "\" 发送的消息出现错误：" + e.Message);
                     }
 
                     //断开连接
