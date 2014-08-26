@@ -151,7 +151,7 @@ namespace Emulator.SMG.Utils
             {
                 deliverLocker.EnterWriteLock();
 
-                if (submitQueue.Count > 0)
+                if (deliverQueue.Count > 0)
                 {
                     var deliver = deliverQueue.Dequeue();
                     var client = handler.GetSPClient(deliver.SPNumber);
