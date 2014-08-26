@@ -320,7 +320,7 @@ namespace Emulator.SMG.Utils
                 Status = 0
             };
             StorageProvider<DeliverStorage>.GetStorage().Insert(mDeliver);
-
+            
             //转发给消息中心处理
             MessageCenter.GetInstance().Commit(deliver);
         }

@@ -160,6 +160,8 @@ namespace Emulator.SMG.Utils
                     if (client != null)
                     {
                         client.Socket.Send(deliver.GetBytes());
+                        //映射seq
+                        spHandler.MapSequeue(deliver.SequenceNumberString, deliver.SequenceNumberString);
                     }
                 }
 

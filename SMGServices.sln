@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulator.SMG", "Emulator.SM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMG.Sqlite", "SMG.Sqlite\SMG.Sqlite.csproj", "{1A149895-41C3-4719-A717-23D4701BFFA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulator.SP", "Emulator.SP\Emulator.SP.csproj", "{2200081D-4D80-499D-9B55-F1D9FDB5623A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{1A149895-41C3-4719-A717-23D4701BFFA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A149895-41C3-4719-A717-23D4701BFFA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A149895-41C3-4719-A717-23D4701BFFA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2200081D-4D80-499D-9B55-F1D9FDB5623A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2200081D-4D80-499D-9B55-F1D9FDB5623A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2200081D-4D80-499D-9B55-F1D9FDB5623A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2200081D-4D80-499D-9B55-F1D9FDB5623A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
